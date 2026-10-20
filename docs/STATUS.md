@@ -1,4 +1,4 @@
-# Status — Phase 02 Design system
+# Status — Phase 03 Storefront + Site editor
 
 Updated 2026-10-20. Legend: **IMPLEMENTED** (built and covered by automated tests) · **MOCKED** (works with simulated data or services) · **PLANNED** (designed, not built) · **BLOCKED** (waiting on a decision, account or file from ACRONOS).
 
@@ -23,7 +23,23 @@ Nothing in this repository is MOCKED. Screens that are not built say so ("Phase 
 | CI | GitHub Actions: lint, typecheck, unit + integration on PostgreSQL 16, build, e2e (desktop + mobile), `npm audit`; Dependabot weekly | `.github/` |
 | Design tokens | Colors and fonts from the design system; fonts self-hosted; focus ring; reduced motion | `app/globals.css` |
 
-## Phase 02 — Design system (awaiting approval)
+## Phase 03 — Storefront and site editor
+
+| Area | What exists | Proof |
+| --- | --- | --- |
+| Storefront | Home, Shop (filters: category, size, color, price, stock; sort; search; pagination), Product (variant picker, availability, related, JSON-LD), Collections and collection page, About, Acronos Lab, Sci-Fi library and story reader, policies, contact, cart page | `tests/e2e/store.spec.ts` |
+| Data rules | Only published products with a USD price whose publish time has passed are shown; drafts, future and unpriced products are hidden; sold-out sizes disabled | `tests/integration/storefront.test.ts` |
+| Site editor (`/admin/site`) | Homepage campaign editor: photos (drag-and-drop, from library, remove, focal point, alt text), all texts and buttons, featured products (newest or hand-picked), draft, preview, publish now, schedule for a date/time (goes live automatically), history with restore | integration + e2e (editor publishes, home changes) |
+| Image library (`/admin/media`) | Bulk upload, resized in the browser to WebP 640/1280/2400 px, alt text; server checks WebP signature and real dimensions, size limits, staff permission, same-origin | integration tests |
+| Forms | Newsletter (explicit consent, honeypot, rate limit, consent time and source stored, no enumeration); contact form stored as support request; typed values kept after errors | integration + e2e |
+| SEO | Per-page titles and descriptions, canonical URLs, sitemap.xml (published items only), robots.txt (admin, account, cart excluded), Product JSON-LD | build output |
+| Story safety | Story HTML sanitized (no scripts, handlers, iframes; links get rel=noopener) | integration test |
+
+**Empty states (by design):** with no published products, collections or stories, each page says what will appear there. Policies say they are being finalized; no legal text is invented.
+
+**Still PLANNED:** product, collection, story, Lab and page editors (Phase 04); cart and checkout (Phase 05); confirmation e-mails (needs an e-mail provider); R2 image storage (Phase 07).
+
+## Phase 02 — Design system (approved 2026-10-20)
 
 Direction change on 2026-10-20: light theme (light gray canvas, near-black ink), requested by ACRONOS. Official logo added as a vector trace of the supplied artwork (® omitted until registration is confirmed).
 
