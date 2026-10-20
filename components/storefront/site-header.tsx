@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { LogoSymbol } from "@/components/brand/logo";
 import { Wordmark } from "@/components/brand/wordmark";
@@ -21,7 +22,9 @@ export function SiteHeader({
   cartCount?: number;
 }) {
   const dialogRef = useRef<HTMLDialogElement>(null);
+  const searchRef = useRef<HTMLDialogElement>(null);
   const [open, setOpen] = useState(false);
+  const active = current;
 
   useEffect(() => {
     const d = dialogRef.current;
@@ -54,8 +57,8 @@ export function SiteHeader({
               <li key={l.href}>
                 <Link
                   href={l.href}
-                  aria-current={current === l.label ? "page" : undefined}
-                  className={`border-b py-1 transition-colors ${current === l.label ? "border-ink text-ink" : "border-transparent text-ink/70 hover:text-ink"}`}
+                  aria-current={active === l.label ? "page" : undefined}
+                  className={`border-b py-1 transition-colors ${active === l.label ? "border-ink text-ink" : "border-transparent text-ink/70 hover:text-ink"}`}
                 >
                   {l.label}
                 </Link>
@@ -65,20 +68,20 @@ export function SiteHeader({
         </nav>
 
         <div className="flex items-center">
-          <button type="button" className={iconBtn} aria-label="Search">
+          <button type="button" className={iconBtn} aria-label="Search" aria-haspopup="dialog" onClick={() => searchRef.current?.showModal()}>
             <SearchIcon />
           </button>
           <Link href="/account" className={`${iconBtn} hidden sm:flex`} aria-label="Account">
             <UserIcon />
           </Link>
-          <button type="button" className={`${iconBtn} relative`} aria-label={`Cart, ${cartCount} ${cartCount === 1 ? "item" : "items"}`}>
+          <Link href="/cart" className={`${iconBtn} relative`} aria-label={`Cart, ${cartCount} ${cartCount === 1 ? "item" : "items"}`}>
             <BagIcon />
             {cartCount > 0 && (
               <span aria-hidden className="absolute right-1.5 top-1.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-ink px-1 font-mono text-[9px] text-canvas">
                 {cartCount}
               </span>
             )}
-          </button>
+          </Link>
         </div>
       </div>
 
@@ -103,7 +106,7 @@ export function SiteHeader({
                   <Link
                     href={l.href}
                     onClick={() => setOpen(false)}
-                    aria-current={current === l.label ? "page" : undefined}
+                    aria-current={active === l.label ? "page" : undefined}
                     className="flex items-baseline gap-4 py-5"
                   >
                     <span className="font-mono text-[10px] text-muted">{String(i + 1).padStart(2, "0")}</span>
@@ -121,6 +124,44 @@ export function SiteHeader({
           </div>
         </div>
       </dialog>
+
+      <dialog
+        ref={searchRef}
+        aria-label="Search"
+        onClick={(e) => e.target === searchRef.current && searchRef.current?.close()}
+        className="mx-auto mt-0 w-full max-w-none bg-paper p-0 text-ink shadow-xl backdrop:bg-ink/30"
+      >
+        <form action="/shop" method="get" role="search" className="mx-auto flex max-w-[1440px] items-center gap-3 px-4 py-5 sm:px-8">
+          <SearchIcon />
+          <label htmlFor="site-search" className="sr-only">
+            Search products
+          </label>
+          <input
+            id="site-search"
+            name="q"
+            type="search"
+            autoFocus
+            placeholder="Search products"
+            className="h-12 min-w-0 flex-1 bg-transparent font-display text-lg uppercase tracking-[0.06em] placeholder:text-muted/70 focus:outline-none"
+          />
+          <button type="submit" className="font-mono text-[11px] uppercase tracking-[0.16em]">
+            Search
+          </button>
+          <button type="button" className={iconBtn} aria-label="Close search" onClick={() => searchRef.current?.close()}>
+            <CloseIcon />
+          </button>
+        </form>
+      </dialog>
     </header>
   );
+}
+
+/** Header that highlights the current section from the URL. Render inside <Suspense>. */
+export function SiteHeaderAuto(props: { links?: NavLink[]; cartCount?: number }) {
+  const pathname = usePathname();
+  const links = props.links ?? MAIN_NAV;
+  const current = [...links]
+    .sort((a, b) => b.href.length - a.href.length)
+    .find((l) => (l.href === "/" ? pathname === "/" : pathname?.startsWith(l.href)))?.label;
+  return <SiteHeader {...props} current={current} />;
 }

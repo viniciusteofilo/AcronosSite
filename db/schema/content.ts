@@ -9,15 +9,25 @@ const timestamps = {
   updatedAt: timestamp({ withTimezone: true }).notNull().defaultNow(),
 };
 
-/** Institutional pages and homepage blocks, editable without touching code. */
+/**
+ * Pages edited in the admin (homepage campaign, About, Lab, policies). Three copies of the
+ * content let ACRONOS prepare the next campaign without touching what is live:
+ *   blocks          what visitors see now
+ *   draftBlocks     work in progress (null = no pending edits)
+ *   scheduledBlocks goes live automatically at scheduledAt
+ */
 export const pages = pgTable("pages", {
   id: uuid().primaryKey().defaultRandom(),
   slug: text().notNull().unique(),
   locale: text().notNull().default("en-US"),
   title: text().notNull(),
-  blocks: jsonb().notNull().default([]),
+  blocks: jsonb().notNull().default({}),
+  draftBlocks: jsonb(),
+  scheduledBlocks: jsonb(),
+  scheduledAt: timestamp({ withTimezone: true }),
   status: text({ enum: CONTENT_STATUS }).notNull().default("draft"),
   publishAt: timestamp({ withTimezone: true }),
+  updatedBy: uuid().references(() => users.id, { onDelete: "set null" }),
   seoTitle: text(),
   seoDescription: text(),
   ...timestamps,
@@ -129,6 +139,18 @@ export const privacyRequests = pgTable("privacy_requests", {
     .default("received"),
   handledBy: uuid().references(() => users.id, { onDelete: "set null" }),
   completedAt: timestamp({ withTimezone: true }),
+  ...timestamps,
+});
+
+/** Messages from the contact form and customer support requests. */
+export const supportRequests = pgTable("support_requests", {
+  id: uuid().primaryKey().defaultRandom(),
+  userId: uuid().references(() => users.id, { onDelete: "set null" }),
+  name: text().notNull(),
+  email: text().notNull(),
+  topic: text({ enum: ["order", "product", "wholesale", "press", "lab", "other"] }).notNull(),
+  message: text().notNull(),
+  status: text({ enum: ["new", "open", "closed"] }).notNull().default("new"),
   ...timestamps,
 });
 

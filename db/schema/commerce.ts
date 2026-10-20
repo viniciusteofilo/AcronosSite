@@ -116,6 +116,7 @@ export const productVariants = pgTable(
     sku: text().notNull().unique(),
     size: text(),
     color: text(),
+    colorHex: char({ length: 7 }), // swatch shown to customers, e.g. #1A1A1A
     weightGrams: integer(),
     lengthMm: integer(),
     widthMm: integer(),
@@ -148,6 +149,9 @@ export const variantPrices = pgTable(
   ],
 );
 
+export type MediaRendition = { key: string; width: number; height: number; bytes: number };
+
+/** One uploaded image. `renditions` holds the resized WebP files (e.g. 640/1280/2400 px wide). */
 export const mediaAssets = pgTable("media_assets", {
   id: uuid().primaryKey().defaultRandom(),
   storageKey: text().notNull().unique(),
@@ -155,6 +159,11 @@ export const mediaAssets = pgTable("media_assets", {
   byteSize: integer().notNull(),
   width: integer(),
   height: integer(),
+  renditions: jsonb().$type<MediaRendition[]>().notNull().default([]),
+  originalName: text(),
+  /** Point of interest (0–1) kept in view when the image is cropped to different shapes. */
+  focalX: numeric({ precision: 4, scale: 3 }).notNull().default("0.5"),
+  focalY: numeric({ precision: 4, scale: 3 }).notNull().default("0.5"),
   altText: text(),
   uploadedBy: uuid().references(() => users.id, { onDelete: "set null" }),
   createdAt: timestamp({ withTimezone: true }).notNull().defaultNow(),
