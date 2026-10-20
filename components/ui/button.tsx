@@ -6,12 +6,12 @@ type Variant = "primary" | "secondary" | "ghost" | "destructive" | "inverse";
 type Size = "md" | "sm";
 
 const variants: Record<Variant, string> = {
-  primary: "bg-snow text-void hover:bg-steel",
-  secondary: "border border-snow/70 text-snow hover:border-snow hover:bg-snow hover:text-void",
-  ghost: "text-snow hover:text-steel",
-  destructive: "border border-alert text-alert hover:bg-alert hover:text-void",
-  /** For light sections (product grids on Snow). */
-  inverse: "bg-void text-snow hover:bg-concrete",
+  primary: "bg-ink text-canvas hover:bg-muted",
+  secondary: "border border-ink/70 text-ink hover:border-ink hover:bg-ink hover:text-canvas",
+  ghost: "text-ink hover:text-muted",
+  destructive: "border border-alert text-alert hover:bg-alert hover:text-canvas",
+  /** Light button for use on an ink band. */
+  inverse: "bg-canvas text-ink hover:bg-line",
 };
 
 const sizes: Record<Size, string> = {

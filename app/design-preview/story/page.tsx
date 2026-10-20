@@ -22,17 +22,17 @@ export default function StoryPreview() {
               <SignalMark className="h-4 w-4" /> Acronos Sci-Fi · Category
             </Eyebrow>
             <h1 className="font-display text-3xl uppercase leading-tight tracking-[0.06em] sm:text-5xl">Story title</h1>
-            <p className="mx-auto max-w-xl text-lg text-snow/75">
+            <p className="mx-auto max-w-xl text-lg text-ink/75">
               One-sentence synopsis that sets the world and the question of the story.
             </p>
-            <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-steel">
+            <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-muted">
               Author name · Publication date · 12 min read
             </p>
           </header>
           <div className="mx-auto max-w-5xl px-4">
             <MediaSlot label="Story cover · 2400×1200" ratio="2/1" />
           </div>
-          <div className="mx-auto max-w-[68ch] px-4 py-16 text-[19px] leading-[1.75] text-snow/90 [&>p+p]:mt-7">
+          <div className="mx-auto max-w-[68ch] px-4 py-16 text-[19px] leading-[1.75] text-ink/90 [&>p+p]:mt-7">
             <p>
               <span className="float-left mr-3 mt-1 font-display text-5xl leading-none">T</span>
               his paragraph is placeholder text set in the reading style for stories: Inter at nineteen pixels,
@@ -40,10 +40,10 @@ export default function StoryPreview() {
               comfortable on a phone and on a wide screen.
             </p>
             <p>
-              Dialogue, scene breaks and emphasis will follow the same rhythm. A light reading mode is planned next
-              to the dark mode shown here; both keep contrast within accessibility guidelines.
+              Dialogue, scene breaks and emphasis will follow the same rhythm. A dark reading mode is planned next
+              to the light mode shown here; both keep contrast within accessibility guidelines.
             </p>
-            <p className="py-4 text-center font-mono text-xs tracking-[0.5em] text-steel" aria-hidden>
+            <p className="py-4 text-center font-mono text-xs tracking-[0.5em] text-muted" aria-hidden>
               {"///"}
             </p>
             <p>
@@ -53,15 +53,15 @@ export default function StoryPreview() {
             </p>
           </div>
         </article>
-        <nav aria-label="More stories" className="mx-auto grid max-w-5xl grid-cols-2 border-t border-concrete px-4">
-          <Link href="/design-preview/story" className="flex flex-col gap-2 py-8 pr-4 hover:text-steel">
-            <span className="flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.2em] text-steel">
+        <nav aria-label="More stories" className="mx-auto grid max-w-5xl grid-cols-2 border-t border-line px-4">
+          <Link href="/design-preview/story" className="flex flex-col gap-2 py-8 pr-4 hover:text-muted">
+            <span className="flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.2em] text-muted">
               <ArrowLeftIcon width={14} /> Previous
             </span>
             <span className="font-display text-sm uppercase tracking-[0.08em] sm:text-base">Previous story title</span>
           </Link>
-          <Link href="/design-preview/story" className="flex flex-col items-end gap-2 border-l border-concrete py-8 pl-4 text-right hover:text-steel">
-            <span className="flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.2em] text-steel">
+          <Link href="/design-preview/story" className="flex flex-col items-end gap-2 border-l border-line py-8 pl-4 text-right hover:text-muted">
+            <span className="flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.2em] text-muted">
               Next <ArrowRightIcon width={14} />
             </span>
             <span className="font-display text-sm uppercase tracking-[0.08em] sm:text-base">Next story title</span>

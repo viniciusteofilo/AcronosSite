@@ -8,7 +8,7 @@ export function SignOutButton() {
   return (
     <button
       type="button"
-      className="uppercase tracking-[0.12em] text-steel hover:text-snow"
+      className="uppercase tracking-[0.12em] text-muted hover:text-ink"
       onClick={async () => {
         await authClient.signOut();
         router.replace("/");

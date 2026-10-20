@@ -17,7 +17,7 @@ export function ProductCard({ product }: { product: ProductCardData }) {
   return (
     <article className="group relative flex flex-col gap-3">
       <div className="relative overflow-hidden">
-        <MediaSlot label={product.imageLabel ?? "Product photo · 1600×2000"} tone="light" className="transition-transform duration-500 group-hover:scale-[1.02]" />
+        <MediaSlot label={product.imageLabel ?? "Product photo · 1600×2000"} tone="product" className="transition-transform duration-500 group-hover:scale-[1.02]" />
         {product.status && (
           <span className="absolute left-3 top-3">
             <Badge tone={product.status === "sold_out" ? "alert" : "inverse"}>
@@ -33,14 +33,14 @@ export function ProductCard({ product }: { product: ProductCardData }) {
               {product.name}
             </Link>
           </h3>
-          <p className="font-mono text-[10px] uppercase tracking-[0.14em] text-steel">{product.code}</p>
+          <p className="font-mono text-[10px] uppercase tracking-[0.14em] text-muted">{product.code}</p>
         </div>
         <p className="font-mono text-[11px] tracking-[0.08em]">{product.price}</p>
       </div>
       {product.colors && product.colors.length > 0 && (
         <ul className="flex gap-1.5" aria-label={`${product.colors.length} colors`}>
           {product.colors.map((c) => (
-            <li key={c} className="h-2.5 w-2.5 rounded-full border border-concrete" style={{ background: c }} />
+            <li key={c} className="h-2.5 w-2.5 rounded-full border border-line" style={{ background: c }} />
           ))}
         </ul>
       )}

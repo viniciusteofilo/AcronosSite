@@ -9,7 +9,7 @@ import {
   SignalMark,
 } from "@/components/graphics";
 import * as Icons from "@/components/icons";
-import { Wordmark } from "@/components/brand/wordmark";
+import { LogoLockup, LogoSymbol, LogoWordmark } from "@/components/brand/logo";
 import { ProductCard } from "@/components/storefront/product-card";
 import { Badge } from "@/components/ui/badge";
 import { Button, ButtonLink } from "@/components/ui/button";
@@ -21,18 +21,19 @@ import { SAMPLE_COLORS, SAMPLE_PRODUCTS, SAMPLE_SIZES } from "./samples";
 export const metadata: Metadata = { title: "Style guide" };
 
 const COLORS = [
-  { name: "Void", hex: "#000000", use: "Main background", cls: "bg-void" },
-  { name: "Carbon", hex: "#0F0F0F", use: "Surfaces, header, cards", cls: "bg-carbon" },
-  { name: "Concrete", hex: "#2A2A2A", use: "Borders, dividers, fields", cls: "bg-concrete" },
-  { name: "Steel", hex: "#A8A8A8", use: "Secondary text, icons", cls: "bg-steel" },
-  { name: "Snow", hex: "#F5F5F5", use: "Main text, product ground", cls: "bg-snow" },
-  { name: "Signal", hex: "#00DFFF", use: "Focus, active state — sparingly", cls: "bg-signal" },
-  { name: "Alert", hex: "#FF2A2A", use: "Errors, sold out, destructive", cls: "bg-alert" },
+  { name: "Canvas", hex: "#ECECE9", use: "Page background (light gray)", cls: "bg-canvas" },
+  { name: "Surface", hex: "#F7F7F5", use: "Cards, header, fields", cls: "bg-surface" },
+  { name: "Paper", hex: "#FFFFFF", use: "Menus, drawers", cls: "bg-paper" },
+  { name: "Line", hex: "#CFCFCB", use: "Dividers, outlines", cls: "bg-line" },
+  { name: "Muted", hex: "#5A5A57", use: "Secondary text, icons", cls: "bg-muted" },
+  { name: "Ink", hex: "#111111", use: "Main text, primary buttons", cls: "bg-ink" },
+  { name: "Signal", hex: "#00849E", use: "Focus, active state — sparingly", cls: "bg-signal" },
+  { name: "Alert", hex: "#C4231B", use: "Errors, sold out, destructive", cls: "bg-alert" },
 ];
 
 function Block({ n, title, children }: { n: string; title: string; children: React.ReactNode }) {
   return (
-    <section className="grid gap-8 border-t border-concrete py-14 lg:grid-cols-[240px_1fr]">
+    <section className="grid gap-8 border-t border-line py-14 lg:grid-cols-[240px_1fr]">
       <div className="flex flex-col gap-2">
         <Eyebrow>{n}</Eyebrow>
         <h2 className="font-display text-lg uppercase tracking-[0.1em]">{title}</h2>
@@ -46,18 +47,39 @@ export default function StyleGuide() {
   return (
     <main id="main" className="mx-auto w-full max-w-[1440px] px-4 py-16 sm:px-8">
       <header className="flex flex-col gap-6 pb-14">
-        <Wordmark className="text-3xl" />
-        <h1 className="font-mono text-xs uppercase tracking-[0.3em] text-steel">Design system · v0.1 · for approval</h1>
+        <LogoWordmark className="h-8 w-auto" />
+        <h1 className="font-mono text-xs uppercase tracking-[0.3em] text-muted">Design system · v0.2 light · for approval</h1>
       </header>
 
+      <Block n="00" title="Logo">
+        <div className="flex flex-col gap-8">
+          <div className="grid gap-4 sm:grid-cols-3">
+            <div className="flex aspect-[4/3] items-center justify-center border border-line bg-surface p-8">
+              <LogoLockup className="w-full max-w-[220px]" />
+            </div>
+            <div className="flex aspect-[4/3] items-center justify-center bg-ink p-8 text-canvas">
+              <LogoLockup className="w-full max-w-[220px]" />
+            </div>
+            <div className="flex aspect-[4/3] items-center justify-center gap-4 border border-line bg-surface p-8">
+              <LogoSymbol className="h-10 w-auto" />
+              <LogoWordmark className="h-5 w-auto" />
+            </div>
+          </div>
+          <p className="max-w-2xl text-sm text-muted">
+            Traced as vector from the artwork supplied on 2026-10-20, without redrawing. The ® mark is left out
+            until the trademark registration is confirmed. Swap in the original SVG/PDF files when available.
+          </p>
+        </div>
+      </Block>
+
       <Block n="01" title="Color">
-        <ul className="grid grid-cols-2 gap-3 sm:grid-cols-4 xl:grid-cols-7">
+        <ul className="grid grid-cols-2 gap-3 sm:grid-cols-4 xl:grid-cols-8">
           {COLORS.map((c) => (
             <li key={c.name} className="flex flex-col gap-3">
-              <span className={`block aspect-square border border-concrete ${c.cls}`} />
+              <span className={`block aspect-square border border-line ${c.cls}`} />
               <span className="font-mono text-[11px] uppercase tracking-[0.14em]">{c.name}</span>
-              <span className="font-mono text-[10px] text-steel">{c.hex}</span>
-              <span className="text-xs text-steel">{c.use}</span>
+              <span className="font-mono text-[10px] text-muted">{c.hex}</span>
+              <span className="text-xs text-muted">{c.use}</span>
             </li>
           ))}
         </ul>
@@ -112,7 +134,7 @@ export default function StyleGuide() {
           <ColorSelector name="sg-color" options={SAMPLE_COLORS} defaultValue="graphite" />
           <SizeSelector name="sg-size" options={SAMPLE_SIZES} defaultValue="m" />
         </div>
-        <p className="mt-6 text-xs text-steel">Sold-out options stay visible, crossed out, and are announced as “sold out” to screen readers.</p>
+        <p className="mt-6 text-xs text-muted">Sold-out options stay visible, crossed out, and are announced as “sold out” to screen readers.</p>
       </Block>
 
       <Block n="06" title="Status">
@@ -137,15 +159,15 @@ export default function StyleGuide() {
 
       <Block n="08" title="Icons & graphic elements">
         <div className="flex flex-col gap-10">
-          <ul className="flex flex-wrap gap-6 text-snow">
+          <ul className="flex flex-wrap gap-6 text-ink">
             {Object.entries(Icons).map(([name, Icon]) => (
               <li key={name} className="flex flex-col items-center gap-2">
                 <Icon width={24} height={24} />
-                <span className="font-mono text-[9px] uppercase text-steel">{name.replace("Icon", "")}</span>
+                <span className="font-mono text-[9px] uppercase text-muted">{name.replace("Icon", "")}</span>
               </li>
             ))}
           </ul>
-          <ul className="flex flex-wrap items-center gap-10 text-snow">
+          <ul className="flex flex-wrap items-center gap-10 text-ink">
             <li><Crosshair className="h-12 w-12" /></li>
             <li><Hatch className="h-12 w-12" /></li>
             <li><Globe className="h-12 w-12" /></li>
@@ -158,7 +180,7 @@ export default function StyleGuide() {
       </Block>
 
       <Block n="09" title="Spacing & motion">
-        <ul className="flex flex-col gap-2 text-sm text-steel">
+        <ul className="flex flex-col gap-2 text-sm text-muted">
           <li>Spacing scale of 4 px: 4 · 8 · 12 · 16 · 24 · 32 · 48 · 64 · 96 · 128.</li>
           <li>12-column grid on desktop, max width 1440 px; 16 px side gutter on mobile.</li>
           <li>Square corners (0–2 px). Transitions 150–250 ms, switched off with “reduce motion”.</li>

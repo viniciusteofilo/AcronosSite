@@ -25,6 +25,8 @@ Nothing in this repository is MOCKED. Screens that are not built say so ("Phase 
 
 ## Phase 02 — Design system (awaiting approval)
 
+Direction change on 2026-10-20: light theme (light gray canvas, near-black ink), requested by ACRONOS. Official logo added as a vector trace of the supplied artwork (® omitted until registration is confirmed).
+
 | Area | What exists | Proof |
 | --- | --- | --- |
 | Components | Icons, brand graphic elements, buttons (5 variants), fields with hint/error, checkbox, size/color pickers (native radios, sold-out announced), quantity stepper, badges, product card, media placeholder | `/design-preview` style guide |
@@ -46,7 +48,7 @@ Nothing in this repository is MOCKED. Screens that are not built say so ("Phase 
 
 ## Blocked (needs ACRONOS)
 
-- Official logo files (SVG/PDF). A text wordmark is used until then.
+- Original vector logo files (SVG/PDF). A faithful vector trace of the supplied PNG is in use until then.
 - Stripe Brasil and PayPal Brasil business accounts (CNPJ), verified.
 - Domain without .br, to configure as the official URL.
 - DDP vs DDU, carrier and HS codes for exports (accountant / customs broker).

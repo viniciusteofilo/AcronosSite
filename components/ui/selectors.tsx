@@ -22,7 +22,7 @@ export function SizeSelector({
 }) {
   return (
     <fieldset className="flex flex-col gap-3">
-      <legend className="mb-3 font-mono text-[10px] uppercase tracking-[0.18em] text-steel">{legend}</legend>
+      <legend className="mb-3 font-mono text-[10px] uppercase tracking-[0.18em] text-muted">{legend}</legend>
       <div className="flex flex-wrap gap-2">
         {options.map((o) => {
           const disabled = o.available === false;
@@ -38,10 +38,10 @@ export function SizeSelector({
                 className="peer sr-only"
               />
               <span
-                className={`flex h-11 min-w-11 items-center justify-center border px-3 font-mono text-xs uppercase transition-colors peer-checked:border-snow peer-checked:bg-snow peer-checked:text-void peer-focus-visible:outline peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-signal ${
+                className={`flex h-11 min-w-11 items-center justify-center border px-3 font-mono text-xs uppercase transition-colors peer-checked:border-ink peer-checked:bg-ink peer-checked:text-canvas peer-focus-visible:outline peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-signal ${
                   disabled
-                    ? "cursor-not-allowed border-concrete text-steel/40 line-through"
-                    : "cursor-pointer border-concrete text-snow hover:border-steel"
+                    ? "cursor-not-allowed border-line text-muted/40 line-through"
+                    : "cursor-pointer border-line text-ink hover:border-muted"
                 }`}
               >
                 {o.label}
@@ -70,9 +70,9 @@ export function ColorSelector({
   const current = options.find((o) => o.value === selected);
   return (
     <fieldset className="flex flex-col gap-3">
-      <legend className="mb-3 font-mono text-[10px] uppercase tracking-[0.18em] text-steel">
+      <legend className="mb-3 font-mono text-[10px] uppercase tracking-[0.18em] text-muted">
         {legend}
-        {current && <span className="ml-2 text-snow" id={`${id}-current`}>{current.label}</span>}
+        {current && <span className="ml-2 text-ink" id={`${id}-current`}>{current.label}</span>}
       </legend>
       <div className="flex flex-wrap gap-3">
         {options.map((o) => (
@@ -88,7 +88,7 @@ export function ColorSelector({
               className="peer sr-only"
             />
             <span
-              className="block h-8 w-8 cursor-pointer rounded-full border border-concrete ring-offset-2 ring-offset-void peer-checked:ring-1 peer-checked:ring-snow peer-focus-visible:outline peer-focus-visible:outline-2 peer-focus-visible:outline-offset-4 peer-focus-visible:outline-signal peer-disabled:cursor-not-allowed peer-disabled:opacity-30"
+              className="block h-8 w-8 cursor-pointer rounded-full border border-line ring-offset-2 ring-offset-canvas peer-checked:ring-1 peer-checked:ring-ink peer-focus-visible:outline peer-focus-visible:outline-2 peer-focus-visible:outline-offset-4 peer-focus-visible:outline-signal peer-disabled:cursor-not-allowed peer-disabled:opacity-30"
               style={{ background: o.swatch }}
             />
           </label>
@@ -103,10 +103,10 @@ export function QuantityStepper({ max = 10, label = "Quantity" }: { max?: number
   const id = useId();
   return (
     <div className="flex flex-col gap-3">
-      <label htmlFor={id} className="font-mono text-[10px] uppercase tracking-[0.18em] text-steel">
+      <label htmlFor={id} className="font-mono text-[10px] uppercase tracking-[0.18em] text-muted">
         {label}
       </label>
-      <div className="flex h-11 w-32 items-stretch border border-concrete">
+      <div className="flex h-11 w-32 items-stretch border border-line">
         <button type="button" aria-label="Decrease quantity" disabled={qty <= 1} onClick={() => setQty((q) => Math.max(1, q - 1))} className="w-10 text-lg disabled:opacity-30">
           −
         </button>

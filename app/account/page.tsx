@@ -13,7 +13,7 @@ export default function AccountPage() {
   return (
     <main className="mx-auto flex w-full max-w-2xl flex-1 flex-col gap-10 px-4 py-16">
       <h1 className="font-display text-2xl uppercase tracking-[0.08em]">Account</h1>
-      <Suspense fallback={<p className="text-steel">Loading…</p>}>
+      <Suspense fallback={<p className="text-muted">Loading…</p>}>
         <Content />
       </Suspense>
     </main>
@@ -26,13 +26,13 @@ async function Content() {
   return (
     <>
       <section className="flex flex-col gap-2">
-        <p className="text-steel">Signed in as {ctx.email}</p>
+        <p className="text-muted">Signed in as {ctx.email}</p>
         <div className="flex flex-wrap gap-6 font-mono text-xs uppercase tracking-[0.12em]">
-          <Link href="/account/security" className="text-steel hover:text-snow">
+          <Link href="/account/security" className="text-muted hover:text-ink">
             Security
           </Link>
           {ctx.roles.length > 0 && (
-            <Link href="/admin" className="text-steel hover:text-snow">
+            <Link href="/admin" className="text-muted hover:text-ink">
               Admin panel
             </Link>
           )}
@@ -40,11 +40,11 @@ async function Content() {
         </div>
       </section>
       <section className="flex flex-col gap-4">
-        <h2 className="font-mono text-xs uppercase tracking-[0.12em] text-steel">Orders</h2>
+        <h2 className="font-mono text-xs uppercase tracking-[0.12em] text-muted">Orders</h2>
         {orders.length === 0 ? (
-          <p className="text-steel">You have no orders yet.</p>
+          <p className="text-muted">You have no orders yet.</p>
         ) : (
-          <ul className="divide-y divide-concrete border-y border-concrete">
+          <ul className="divide-y divide-line border-y border-line">
             {orders.map((o) => (
               <li key={o.id} className="flex justify-between py-3 text-sm">
                 <span className="font-mono">{o.number}</span>

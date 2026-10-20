@@ -43,7 +43,7 @@ export function MfaSetup({ enabled }: { enabled: boolean }) {
 
   if (done) {
     return (
-      <p className="border border-concrete p-4 text-sm">
+      <p className="border border-line p-4 text-sm">
         Two-factor authentication is <strong>on</strong> for this account.
       </p>
     );
@@ -52,7 +52,7 @@ export function MfaSetup({ enabled }: { enabled: boolean }) {
   if (!setup) {
     return (
       <form onSubmit={start} className="flex flex-col gap-5">
-        <p className="text-sm text-steel">
+        <p className="text-sm text-muted">
           Confirm your password to start. You will need an authenticator app such as Google
           Authenticator, Microsoft Authenticator or 1Password.
         </p>
@@ -79,19 +79,19 @@ export function MfaSetup({ enabled }: { enabled: boolean }) {
   return (
     <div className="flex flex-col gap-8">
       <div className="flex flex-col gap-3">
-        <p className="text-sm text-steel">1. Scan this code with your authenticator app.</p>
+        <p className="text-sm text-muted">1. Scan this code with your authenticator app.</p>
         {/* eslint-disable-next-line @next/next/no-img-element -- generated data URL */}
         <img src={setup.qrDataUrl} alt="QR code for your authenticator app" width={220} height={220} />
-        <details className="text-xs text-steel">
+        <details className="text-xs text-muted">
           <summary className="cursor-pointer">Can’t scan? Show the setup key</summary>
           <code className="mt-2 block break-all font-mono">{setup.uri}</code>
         </details>
       </div>
       <div className="flex flex-col gap-3">
-        <p className="text-sm text-steel">
+        <p className="text-sm text-muted">
           2. Save these backup codes somewhere safe. Each one works once if you lose your phone.
         </p>
-        <ul className="grid grid-cols-2 gap-2 border border-concrete p-4 font-mono text-sm">
+        <ul className="grid grid-cols-2 gap-2 border border-line p-4 font-mono text-sm">
           {setup.backupCodes.map((c) => (
             <li key={c}>{c}</li>
           ))}

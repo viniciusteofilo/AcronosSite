@@ -1,10 +1,10 @@
 type Tone = "neutral" | "signal" | "alert" | "inverse";
 
 const tones: Record<Tone, string> = {
-  neutral: "border-concrete text-steel",
+  neutral: "border-line text-muted",
   signal: "border-signal/60 text-signal",
   alert: "border-alert/70 text-alert",
-  inverse: "border-snow bg-snow text-void",
+  inverse: "border-ink bg-ink text-canvas",
 };
 
 /** Status label. Meaning is always in the text, never in color alone. */

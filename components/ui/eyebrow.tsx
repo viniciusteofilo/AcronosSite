@@ -1,7 +1,7 @@
 /** Small mono label used above titles: "01 // COLLECTION". */
 export function Eyebrow({ children, className = "" }: { children: React.ReactNode; className?: string }) {
   return (
-    <p className={`font-mono text-[10px] uppercase tracking-[0.22em] text-steel ${className}`}>{children}</p>
+    <p className={`font-mono text-[10px] uppercase tracking-[0.22em] text-muted ${className}`}>{children}</p>
   );
 }
 
