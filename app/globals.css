@@ -1,17 +1,20 @@
 @import "tailwindcss";
 
 /*
- * ACRONOS design tokens (Phase 01 document, section 7).
- * Dark base, product first, accents used sparingly.
+ * ACRONOS design tokens — light theme (approved direction, 2026-10-20).
+ * Light gray canvas, near-black ink, product first, accents used sparingly.
+ * Contrast (WCAG 2.2): ink 16:1, muted 5.9:1, alert 4.9:1 on canvas; signal 3.7:1 (focus/UI only).
  */
 @theme {
-  --color-void: #000000;
-  --color-carbon: #0f0f0f;
-  --color-concrete: #2a2a2a;
-  --color-steel: #a8a8a8;
-  --color-snow: #f5f5f5;
-  --color-signal: #00dfff;
-  --color-alert: #ff2a2a;
+  --color-canvas: #ecece9;   /* page background, light gray */
+  --color-surface: #f7f7f5;  /* cards, header, fields */
+  --color-paper: #ffffff;    /* highest surface: drawers, popovers */
+  --color-line: #cfcfcb;     /* dividers, card outlines (decorative) */
+  --color-field: #8c8c88;    /* form control borders (3:1 non-text contrast) */
+  --color-muted: #5a5a57;    /* secondary text, icons */
+  --color-ink: #111111;      /* main text, primary buttons */
+  --color-signal: #00849e;   /* focus ring, active state */
+  --color-alert: #c4231b;    /* errors, sold out, destructive */
 
   --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-space-mono), ui-monospace, monospace;
@@ -21,13 +24,18 @@
 }
 
 html {
-  color-scheme: dark;
+  color-scheme: light;
 }
 
 body {
-  background: var(--color-void);
-  color: var(--color-snow);
+  background: var(--color-canvas);
+  color: var(--color-ink);
   font-family: var(--font-sans);
+}
+
+::selection {
+  background: var(--color-ink);
+  color: var(--color-canvas);
 }
 
 /* Visible keyboard focus everywhere (WCAG 2.2 AA). */

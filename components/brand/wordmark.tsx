@@ -1,11 +1,9 @@
+import { LogoWordmark } from "./logo";
+
 /**
- * Text placeholder for the logo. BLOCKED: replace with the official SVG files
- * (symbol, wordmark, signature) when supplied. Do not redraw the logo here.
+ * Official ACRONOS wordmark (traced from the supplied artwork, see logo.tsx).
+ * Sized by font size: pass a text-* class and the mark scales with it.
  */
 export function Wordmark({ className = "" }: { className?: string }) {
-  return (
-    <span className={`font-display text-lg font-semibold tracking-[0.3em] ${className}`}>
-      ACRONOS
-    </span>
-  );
+  return <LogoWordmark className={`inline-block h-[0.85em] w-auto ${className}`} />;
 }

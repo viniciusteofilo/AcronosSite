@@ -7,7 +7,7 @@ import { PERIOD_DAYS, getDashboardMetrics, parsePeriod } from "@/server/reports/
 
 export default function AdminDashboardPage({ searchParams }: PageProps<"/admin">) {
   return (
-    <Suspense fallback={<p className="text-steel">Loading metrics…</p>}>
+    <Suspense fallback={<p className="text-muted">Loading metrics…</p>}>
       <Dashboard searchParams={searchParams} />
     </Suspense>
   );
@@ -43,7 +43,7 @@ async function Dashboard({ searchParams }: Pick<PageProps<"/admin">, "searchPara
               key={d}
               href={`/admin?days=${d}`}
               aria-current={d === m.periodDays ? "page" : undefined}
-              className={d === m.periodDays ? "text-snow underline underline-offset-4" : "text-steel hover:text-snow"}
+              className={d === m.periodDays ? "text-ink underline underline-offset-4" : "text-muted hover:text-ink"}
             >
               {d} days
             </Link>
@@ -52,14 +52,14 @@ async function Dashboard({ searchParams }: Pick<PageProps<"/admin">, "searchPara
       </header>
       <ul className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
         {cards.map((c) => (
-          <li key={c.label} className="flex flex-col gap-1 border border-concrete p-4">
-            <span className="font-mono text-xs uppercase tracking-[0.1em] text-steel">{c.label}</span>
+          <li key={c.label} className="flex flex-col gap-1 border border-line p-4">
+            <span className="font-mono text-xs uppercase tracking-[0.1em] text-muted">{c.label}</span>
             <span className="text-2xl">{c.value}</span>
-            <span className="text-xs text-steel">{c.sub}</span>
+            <span className="text-xs text-muted">{c.sub}</span>
           </li>
         ))}
       </ul>
-      <p className="text-sm text-steel">
+      <p className="text-sm text-muted">
         Figures come straight from the database. The store is not selling yet, so they are zero.
       </p>
     </div>
