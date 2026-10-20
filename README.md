@@ -5,7 +5,7 @@ E-commerce, CMS and admin panel for ACRONOS. Owned by the company: no platform s
 **Stack:** Next.js 16 (App Router) · TypeScript · Tailwind CSS 4 · PostgreSQL · Drizzle ORM · Better Auth (TOTP two-factor) · Zod · Vitest · Playwright.
 **Planned hosting:** Cloudflare Workers + Neon Postgres + Cloudflare R2 (see the Phase 01 architecture document).
 
-> Current phase: **01 — Foundation.** The public storefront, checkout and payments are not built yet.
+> Current phase: **02 — Design system** (screens at `/design-preview`, for approval). The public storefront, checkout and payments are not built yet.
 > See [docs/STATUS.md](docs/STATUS.md) for exactly what is implemented, mocked, planned or blocked.
 
 ## Run locally
@@ -35,6 +35,7 @@ and open `/admin`. Staff accounts cannot open the admin panel without two-factor
 | `npm run db:generate` | Create a migration after changing `db/schema` |
 | `npm run db:migrate` | Apply pending migrations |
 | `npm run admin:create` | Bootstrap the first super admin (refuses if one exists) |
+| `DESIGN_PREVIEW=1 npm run build` | Include the `/design-preview` approval screens (always available in `npm run dev`) |
 
 ## Project layout
 
