@@ -1,6 +1,7 @@
 import { SiteFooter } from "@/components/storefront/site-footer";
 import { Suspense } from "react";
-import { SiteHeader, SiteHeaderAuto } from "@/components/storefront/site-header";
+import { HeaderWithCart } from "@/components/storefront/header-with-cart";
+import { SiteHeader } from "@/components/storefront/site-header";
 import { newsletterAction } from "./actions";
 
 export default function StoreLayout({ children }: LayoutProps<"/">) {
@@ -13,7 +14,7 @@ export default function StoreLayout({ children }: LayoutProps<"/">) {
         Skip to content
       </a>
       <Suspense fallback={<SiteHeader />}>
-        <SiteHeaderAuto />
+        <HeaderWithCart />
       </Suspense>
       <main id="main" className="flex-1">
         {children}

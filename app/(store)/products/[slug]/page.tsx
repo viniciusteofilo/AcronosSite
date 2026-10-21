@@ -12,6 +12,7 @@ import { VariantPicker } from "@/components/storefront/variant-picker";
 import { Eyebrow } from "@/components/ui/eyebrow";
 import { formatMoney } from "@/lib/money";
 import { getProductBySlug, listProducts, shopFilterSchema, STORE_CURRENCY } from "@/server/catalog/queries";
+import { getCheckoutReadiness } from "@/server/store/settings";
 
 export async function generateMetadata({ params }: PageProps<"/products/[slug]">): Promise<Metadata> {
   const { slug } = await params;
@@ -39,7 +40,7 @@ async function Product({ params }: Pick<PageProps<"/products/[slug]">, "params">
   const { slug } = await params;
   await connection();
   const db = getDb();
-  const p = await getProductBySlug(db, slug);
+  const [p, readiness] = await Promise.all([getProductBySlug(db, slug), getCheckoutReadiness(db)]);
   if (!p) notFound();
   const fmt = (m: number) => formatMoney(m, STORE_CURRENCY);
   const related = p.category
@@ -119,6 +120,7 @@ async function Product({ params }: Pick<PageProps<"/products/[slug]">, "params">
               </h1>
             </div>
             <VariantPicker
+              checkoutOpen={readiness.open}
               variants={p.variants.map((v) => ({
                 id: v.id,
                 sku: v.sku,

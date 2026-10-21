@@ -11,7 +11,7 @@ export type AdminNavItem = {
 
 export const ADMIN_NAV: AdminNavItem[] = [
   { label: "Dashboard", href: "/admin", permission: "dashboard:view", status: "implemented" },
-  { label: "Orders", href: "/admin/orders", permission: "orders:read", status: "planned", phase: "05" },
+  { label: "Orders", href: "/admin/orders", permission: "orders:read", status: "implemented" },
   { label: "Products", href: "/admin/products", permission: "products:read", status: "implemented" },
   { label: "Collections", href: "/admin/collections", permission: "products:read", status: "implemented" },
   { label: "Inventory", href: "/admin/inventory", permission: "inventory:adjust", status: "implemented" },
@@ -23,7 +23,7 @@ export const ADMIN_NAV: AdminNavItem[] = [
   { label: "Customers", href: "/admin/customers", permission: "customers:read", status: "implemented" },
   { label: "Messages", href: "/admin/messages", permission: "customers:read", status: "implemented" },
   { label: "Newsletter", href: "/admin/marketing", permission: "marketing:write", status: "implemented" },
-  { label: "Reports", href: "/admin/reports", permission: "reports:view", status: "planned", phase: "05" },
+  { label: "Reports", href: "/admin/reports", permission: "reports:view", status: "planned", phase: "06" },
   { label: "Users", href: "/admin/users", permission: "users:manage", status: "implemented" },
-  { label: "Settings", href: "/admin/settings", permission: "settings:manage", status: "planned", phase: "05" },
+  { label: "Settings", href: "/admin/settings", permission: "settings:manage", status: "implemented" },
 ];
