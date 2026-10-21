@@ -23,7 +23,8 @@ export const ADMIN_NAV: AdminNavItem[] = [
   { label: "Customers", href: "/admin/customers", permission: "customers:read", status: "implemented" },
   { label: "Messages", href: "/admin/messages", permission: "customers:read", status: "implemented" },
   { label: "Newsletter", href: "/admin/marketing", permission: "marketing:write", status: "implemented" },
-  { label: "Reports", href: "/admin/reports", permission: "reports:view", status: "planned", phase: "06" },
+  { label: "Reports", href: "/admin/reports", permission: "reports:view", status: "implemented" },
   { label: "Users", href: "/admin/users", permission: "users:manage", status: "implemented" },
+  { label: "Privacy requests", href: "/admin/privacy", permission: "privacy:handle", status: "implemented" },
   { label: "Settings", href: "/admin/settings", permission: "settings:manage", status: "implemented" },
 ];

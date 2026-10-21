@@ -71,7 +71,7 @@ async function List() {
             </span>
           </span>
           <span
-            className={`inline-flex h-6 items-center border px-2 font-mono text-[10px] uppercase tracking-[0.14em] ${s.status === "published" || s.status === "scheduled" ? "border-signal/60 text-signal" : "border-line text-muted"}`}
+            className={`inline-flex h-6 items-center border px-2 font-mono text-[10px] uppercase tracking-[0.14em] ${s.status === "published" || s.status === "scheduled" ? "border-signal/60 text-signal-ink" : "border-line text-muted"}`}
           >
             {s.status === "scheduled" && s.publishAt
               ? `Scheduled ${new Date(s.publishAt).toLocaleDateString("en-US", { dateStyle: "medium" })}`

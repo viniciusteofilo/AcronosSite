@@ -1,7 +1,7 @@
 import { and, asc, desc, eq, sql, type SQL } from "drizzle-orm";
 import { z } from "zod";
 import type { Database } from "@/db/client";
-import { addresses, newsletterSubscribers, orders, ROLE_KEYS, supportRequests, userRoles, users, type RoleKey } from "@/db/schema";
+import { addresses, newsletterSubscribers, orders, ROLE_KEYS, sessions, supportRequests, twoFactors, userRoles, users, type RoleKey } from "@/db/schema";
 import { recordAudit } from "@/server/audit/log";
 import type { AccessContext } from "@/server/rbac/access";
 import { hasPermission } from "@/server/rbac/permissions";
@@ -182,4 +182,21 @@ export async function revokeStaffRole(db: Database, actor: AccessContext | null,
     if (e instanceof Error && e.message.includes("cannot remove their own")) throw new UserError("You cannot remove your own super admin role.");
     throw e;
   }
+}
+
+/**
+ * Lost phone and no backup codes: a super admin turns off another person's two-factor and
+ * signs them out everywhere. They must set it up again before entering the admin.
+ */
+export async function resetTwoFactor(db: Database, actor: AccessContext | null, targetUserId: string) {
+  const ctx = authorize(actor, "users:manage");
+  const id = z.uuid().parse(targetUserId);
+  if (id === ctx.userId) throw new UserError("You cannot reset your own two-factor here. Use a backup code.");
+  await db.transaction(async (tx) => {
+    const [u] = await tx.update(users).set({ twoFactorEnabled: false, updatedAt: new Date() }).where(eq(users.id, id)).returning({ id: users.id });
+    if (!u) throw new UserError("Person not found.");
+    await tx.delete(twoFactors).where(eq(twoFactors.userId, id));
+    await tx.delete(sessions).where(eq(sessions.userId, id));
+    await recordAudit(tx, { actorId: ctx.userId, action: "user.two_factor_reset", entityType: "user", entityId: id });
+  });
 }

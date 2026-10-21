@@ -143,8 +143,8 @@ export function Notice({ result }: { result: { ok: boolean; message: string } | 
 }
 
 const STATUS_STYLE: Record<string, string> = {
-  published: "border-signal/60 text-signal",
-  scheduled: "border-signal/60 text-signal",
+  published: "border-signal/60 text-signal-ink",
+  scheduled: "border-signal/60 text-signal-ink",
   draft: "border-line text-muted",
   archived: "border-line text-muted line-through",
 };
@@ -159,7 +159,7 @@ export function StatusBadge({ status, label }: { status: string; label?: string 
 
 /** Sticky bar at the top of an editor with the save state and main buttons. */
 export function SaveBar({ status, tone, children }: { status: string; tone?: "alert" | "signal" | "muted"; children: ReactNode }) {
-  const color = tone === "alert" ? "text-alert" : tone === "signal" ? "text-signal" : "text-muted";
+  const color = tone === "alert" ? "text-alert" : tone === "signal" ? "text-signal-ink" : "text-muted";
   return (
     <div className="sticky top-0 z-20 -mx-4 flex flex-wrap items-center justify-between gap-3 border-b border-line bg-surface/95 px-4 py-3 backdrop-blur md:-mx-8 md:px-8">
       <p className={`font-mono text-[10px] uppercase tracking-[0.16em] ${color}`} role="status">

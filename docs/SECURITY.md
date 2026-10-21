@@ -17,10 +17,44 @@ Reference: OWASP ASVS level 2 and OWASP Top 10. No system is immune to attack; t
 - **Secrets:** environment variables only; `.env*` git-ignored. Payment keys are never stored in the database.
 - **Supply chain:** `npm audit` in CI, Dependabot weekly.
 
+## Added in Phase 05–06
+
+- **Payments:** hosted checkouts only (no card data here).
+  - An order is marked paid only by a verified provider confirmation: a Stripe signature on the raw body, or a PayPal capture plus PayPal webhook verification.
+  - Each event is processed once.
+  - Amounts are checked against the order.
+- **Stock abuse:** checkout attempts are limited per IP (10 per 15 min). Adding to the cart is limited (60 per 10 min). An online order holds at most 30 units, and holds expire.
+- **Sessions:** every person sees where they are signed in (`/account/security`) and can sign out other devices. This takes effect immediately, because sessions are checked in the database on each request.
+- **Privacy (LGPD / GDPR / CCPA):**
+  - Customers download their data as JSON and can request erasure.
+  - The super admin erases the data in Admin → Privacy requests; the request is due in 15 days.
+  - Orders are kept for tax law; everything else personal is deleted or anonymized.
+  - Each step is audited.
+- **Exports:** the newsletter and order CSVs are audited and protected against spreadsheet formula injection.
+- **Backups:**
+  - `scripts/backup.sh` writes a compressed dump with a checksum.
+  - `scripts/restore-check.sh` restores it into a scratch database and compares every table's row count.
+  - Drill run on 2026-10-21: OK.
+  - Neon point-in-time recovery is added in Phase 07.
+
+## Content Security Policy decision (2026-10-21)
+
+- **Scripts keep `'unsafe-inline'`.** Next.js streams page data in inline scripts.
+- **Why not nonces:** they would make every page render per request. That disables static shells and CDN caching, and the Next.js documentation says this is incompatible with partial prerendering.
+- **Why not hashes:** we tested hash-based Subresource Integrity with `script-src 'self'`. The browser blocked the framework's inline scripts.
+- **Compensating controls:**
+  - No third-party scripts.
+  - React escaping everywhere.
+  - Rich text (stories) sanitized on save and on render.
+  - `object-src 'none'`, `base-uri 'self'` and `frame-ancestors 'none'`.
+  - `form-action` limited to this site and the payment providers.
+  - `connect-src 'self'`.
+- **Review again** when Next.js supports hashes for streamed scripts.
+
 ## Recovering admin access
 
 1. Lost phone: sign in with a backup code, then set up two-factor again from `/account/security`.
-2. No backup codes: another super admin removes the user's two-factor (Phase 04 screen; audited). Keep **two** super admins.
+2. No backup codes: another super admin uses Admin → Users → "Reset (lost phone)" (turns two-factor off and signs the person out everywhere; audited). Keep **two** super admins.
 3. Only super admin locked out: an operator with database access follows the documented break-glass procedure (Phase 07 runbook), recorded in the audit log.
 
 ## Incident response (summary)
@@ -36,6 +70,7 @@ Reference: OWASP ASVS level 2 and OWASP Top 10. No system is immune to attack; t
 - Phishing of a staff member's password and code in real time (mitigation planned: sign-in alerts, WebAuthn/passkeys later).
 - Provider outage (Cloudflare, Neon, Stripe, PayPal).
 - A new vulnerability in a dependency before a patch exists.
-- Inline-script CSP until nonces are introduced (Phase 06).
+- Inline scripts allowed by the CSP (see decision above).
+- Sign-in alerts by e-mail wait for an e-mail provider; until then staff review their sessions on `/account/security`.
 
 Report a vulnerability privately to the ACRONOS team; do not open a public issue.

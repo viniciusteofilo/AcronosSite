@@ -1,4 +1,4 @@
-# Status — Phase 05 Cart, checkout and payments
+# Status — Phase 06 Security, privacy, accessibility, performance
 
 Updated 2026-10-21. Legend: **IMPLEMENTED** (built and covered by automated tests) · **MOCKED** (works with simulated data or services) · **PLANNED** (designed, not built) · **BLOCKED** (waiting on a decision, account or file from ACRONOS).
 
@@ -22,6 +22,20 @@ Nothing in this repository is MOCKED. Screens that are not built say so ("Phase 
 | Security headers | CSP, HSTS, nosniff, frame-ancestors none / X-Frame-Options DENY, Referrer-Policy, Permissions-Policy | `curl -I` |
 | CI | GitHub Actions: lint, typecheck, unit + integration on PostgreSQL 16, build, e2e (desktop + mobile), `npm audit`; Dependabot weekly | `.github/` |
 | Design tokens | Colors and fonts from the design system; fonts self-hosted; focus ring; reduced motion | `app/globals.css` |
+
+## Phase 06 — Hardening
+
+| Area | What exists | Proof |
+| --- | --- | --- |
+| Abuse limits | Checkout attempts 10 / 15 min per IP, add-to-cart 60 / 10 min, max 30 units per online order | code + integration |
+| Sessions | `/account/security` lists where the account is signed in; sign out one or all other devices (immediate) | `tests/integration/hardening.test.ts` |
+| Staff recovery | Super admin "Reset (lost phone)" for another person's two-factor; signs them out everywhere; audited | integration |
+| Privacy (LGPD/GDPR/CCPA) | "Download my data" (JSON); "Delete my account" request; Admin → Privacy requests (15-day deadline) erases personal data, keeps orders for tax law | integration |
+| Reports (`/admin/reports`) | Revenue per currency and day, orders, average, shipping, refunds, best sellers, countries; orders CSV for the accountant (audited, formula-safe) | integration |
+| Accessibility | axe-core WCAG 2.2 AA on 10 public pages (desktop + mobile) and 11 admin screens: 0 violations; cyan text darkened for 4.5:1 | `tests/e2e/accessibility.spec.ts`, `docs/ACCESSIBILITY.md` |
+| Performance | Lighthouse (production build, local): mobile perf 88–93, desktop 99–100, accessibility 100, CLS 0 on home, shop, product | run 2026-10-21 |
+| Backups | Backup + restore drill scripts; drill OK | `docs/OPERATIONS.md` |
+| CSP | Decision documented (nonces/hashes tested; compensating controls) | `docs/SECURITY.md` |
 
 ## Phase 05 — Cart, checkout and payments
 
@@ -79,7 +93,7 @@ All of this works in test mode. Selling for real needs the provider accounts and
 
 **Empty states (by design):** with no published products, collections or stories, each page says what will appear there. Policies say they are being finalized; no legal text is invented.
 
-**Still PLANNED:** reports (Phase 06); cart and checkout (Phase 05); confirmation e-mails (needs an e-mail provider); R2 image storage (Phase 07).
+**Still PLANNED:** deployment (Phase 07). cart and checkout (Phase 05); confirmation e-mails (needs an e-mail provider); R2 image storage (Phase 07).
 
 ## Phase 02 — Design system (approved 2026-10-20)
 
@@ -117,6 +131,7 @@ Direction change on 2026-10-20: light theme (light gray canvas, near-black ink),
 ## Known limitations
 
 - Admin and account pages stream their content, so an unauthorized request returns HTTP 200 with the 404/redirect delivered in the stream (no data is sent). Requests without a session cookie are redirected with a real 307 by `proxy.ts`.
-- CSP still allows inline scripts (framework bootstrap); nonce-based CSP is planned for Phase 06.
-- `npm audit` reports 4 moderate issues in `drizzle-kit`'s bundled esbuild (development tool only, not shipped to production).
+- CSP allows inline scripts (framework data streaming); see the decision in `docs/SECURITY.md`.
+- `npm audit` reports moderate issues in `drizzle-kit`'s esbuild and high ones in `eslint-config-next`'s file globbing: development tools only, not part of the site that runs. CI blocks high issues in runtime dependencies.
+- Lighthouse shows product meta descriptions as missing because Next.js streams metadata to browsers; search engine bots receive it in the page head.
 - The database driver is `postgres-js`; the Cloudflare runtime driver (Neon serverless / Hyperdrive) is swapped in `db/client.ts` in Phase 07.

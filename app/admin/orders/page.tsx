@@ -77,7 +77,7 @@ async function List({ searchParams }: Pick<PageProps<"/admin/orders">, "searchPa
                     </span>
                   </td>
                   <td className="py-2 pr-3 font-mono">{formatMoney(o.totalMinor, o.currency)}</td>
-                  <td className={`py-2 pr-3 text-xs ${o.paymentStatus === "paid" ? "text-signal" : ""}`}>
+                  <td className={`py-2 pr-3 text-xs ${o.paymentStatus === "paid" ? "text-signal-ink" : ""}`}>
                     {PAY_LABEL[o.paymentStatus]}
                     {o.provider && <span className="block text-muted">{o.provider}</span>}
                   </td>

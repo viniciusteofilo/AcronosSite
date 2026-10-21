@@ -2,7 +2,7 @@ type Tone = "neutral" | "signal" | "alert" | "inverse";
 
 const tones: Record<Tone, string> = {
   neutral: "border-line text-muted",
-  signal: "border-signal/60 text-signal",
+  signal: "border-signal/60 text-signal-ink",
   alert: "border-alert/70 text-alert",
   inverse: "border-ink bg-ink text-canvas",
 };
