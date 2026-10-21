@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useMemo, useState, useTransition } from "react";
+import { useId, useMemo, useState, useTransition } from "react";
 import { slugify } from "@/lib/slug";
 import type { ActionResult } from "@/server/admin/errors";
 import type { EditorCollection } from "@/server/catalog/collections-admin";
@@ -31,6 +31,8 @@ export function CollectionEditor({
   };
 }) {
   const router = useRouter();
+  // unique per instance: Next keeps hidden copies of visited pages, and radios sharing a name would interfere
+  const radioName = useId();
   const [form, setForm] = useState({
     id: initial?.id ?? null,
     name: initial?.name ?? "",
@@ -207,7 +209,7 @@ export function CollectionEditor({
           <Panel title="Visibility">
             {(["draft", "published", "archived"] as Status[]).map((s) => (
               <label key={s} className={`flex cursor-pointer gap-3 border p-3 text-sm ${form.status === s ? "border-ink bg-paper" : "border-line"}`}>
-                <input type="radio" name="collection-status" checked={form.status === s} onChange={() => set({ status: s })} className="mt-1" />
+                <input type="radio" name={radioName} checked={form.status === s} onChange={() => set({ status: s })} className="mt-1" />
                 <span className="flex flex-col">
                   <span className="capitalize">{s}</span>
                   <span className="text-xs text-muted">
