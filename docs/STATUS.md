@@ -1,6 +1,6 @@
-# Status — Phase 03 Storefront + Site editor
+# Status — Phase 04 (part 1) Catalog admin
 
-Updated 2026-10-20. Legend: **IMPLEMENTED** (built and covered by automated tests) · **MOCKED** (works with simulated data or services) · **PLANNED** (designed, not built) · **BLOCKED** (waiting on a decision, account or file from ACRONOS).
+Updated 2026-10-21. Legend: **IMPLEMENTED** (built and covered by automated tests) · **MOCKED** (works with simulated data or services) · **PLANNED** (designed, not built) · **BLOCKED** (waiting on a decision, account or file from ACRONOS).
 
 Nothing in this repository is MOCKED. Screens that are not built say so ("Phase 04/05") instead of pretending to work.
 
@@ -23,6 +23,18 @@ Nothing in this repository is MOCKED. Screens that are not built say so ("Phase 
 | CI | GitHub Actions: lint, typecheck, unit + integration on PostgreSQL 16, build, e2e (desktop + mobile), `npm audit`; Dependabot weekly | `.github/` |
 | Design tokens | Colors and fonts from the design system; fonts self-hosted; focus ring; reduced motion | `app/globals.css` |
 
+## Phase 04 (part 1) — Catalog admin
+
+| Area | What exists | Proof |
+| --- | --- | --- |
+| Products (`/admin/products`) | List with status tabs, search by name or SKU, price range, available stock, missing-price warnings | `tests/integration/catalog-admin.test.ts` |
+| Product editor | Name, web address, description, composition, care, technical info; several photos at once (drag to reorder, cover, focal point, alt text, from library); sizes and colors generate variants; SKU suggestions; USD and BRL prices (typed as 189.00 or 990,00), compare-at prices; stock; weight; draft / published / archived; go-live date for drops; category (create inline) and collections; Google preview; "ready to sell" checklist; duplicate; delete (only if never sold) | integration + `tests/e2e/admin-catalog.spec.ts` |
+| Rules enforced on the server | Cannot publish without a USD price; unique SKU and web address with readable errors; compare-at must be higher than price; two people editing the same product: the second save is refused instead of overwriting; stock saved as a difference so sales made meanwhile are not lost; variants that were sold are hidden, never deleted; every change audited | integration tests |
+| Inventory (`/admin/inventory`) | All / low stock / sold out, search, add or remove units with a reason and note, per-variant history with who and when, low-stock alert level; stock can never go below units reserved by open orders | integration + e2e |
+| Collections (`/admin/collections`) | Banner photo, text, products in chosen order (shop respects it), draft / published / archived, SEO, delete keeps products | integration tests |
+| Categories (`/admin/products/categories`) | Add, rename, reorder, delete (products just lose the category) | integration tests |
+| Permissions | Content editors see products read-only and cannot open inventory; managers and super admins edit | integration + e2e |
+
 ## Phase 03 — Storefront and site editor
 
 | Area | What exists | Proof |
@@ -37,7 +49,7 @@ Nothing in this repository is MOCKED. Screens that are not built say so ("Phase 
 
 **Empty states (by design):** with no published products, collections or stories, each page says what will appear there. Policies say they are being finalized; no legal text is invented.
 
-**Still PLANNED:** product, collection, story, Lab and page editors (Phase 04); cart and checkout (Phase 05); confirmation e-mails (needs an e-mail provider); R2 image storage (Phase 07).
+**Still PLANNED:** Sci-Fi, Lab, pages and policies editors, customers, users and settings screens (Phase 04 part 2); cart and checkout (Phase 05); confirmation e-mails (needs an e-mail provider); R2 image storage (Phase 07).
 
 ## Phase 02 — Design system (approved 2026-10-20)
 
