@@ -3,9 +3,11 @@ import type { NextConfig } from "next";
 const isDev = process.env.NODE_ENV !== "production";
 
 /*
- * Baseline Content Security Policy. 'unsafe-inline' for scripts is still needed by the
- * framework's inline bootstrap; a nonce-based policy is PLANNED for Phase 06 (see docs/SECURITY.md).
- * Payment provider domains are added in Phase 05 together with the hosted checkouts.
+ * Content Security Policy. Scripts keep 'unsafe-inline' because Next.js streams page data in
+ * inline scripts; nonces would force every page to render per request (no static shells, no
+ * CDN cache), and hash-based SRI was tested and does not cover those inline scripts
+ * (decision recorded in docs/SECURITY.md). Everything else is locked down: no third-party
+ * scripts, no framing, no plugins, forms only to this site and the payment providers.
  */
 const csp = [
   "default-src 'self'",
@@ -15,7 +17,8 @@ const csp = [
   "font-src 'self'",
   "connect-src 'self'",
   "frame-ancestors 'none'",
-  "form-action 'self'",
+  // hosted checkout: without JavaScript, the checkout form redirects to the provider's page
+  "form-action 'self' https://checkout.stripe.com https://www.paypal.com https://www.sandbox.paypal.com",
   "base-uri 'self'",
   "object-src 'none'",
   ...(isDev ? [] : ["upgrade-insecure-requests"]),

@@ -77,7 +77,7 @@ export function StoreSettingsEditor({
       <Panel title="Store status">
         {settings.checkoutOpen && readiness.open ? (
           <p className="text-sm">
-            <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-signal">Open</span> · Customers can add to cart and pay.
+            <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-signal-ink">Open</span> · Customers can add to cart and pay.
           </p>
         ) : (
           <>

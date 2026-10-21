@@ -9,6 +9,8 @@ export type AccessContext = {
   roles: RoleKey[];
   twoFactorEnabled: boolean;
   sessionCreatedAt: Date;
+  /** Current session id, when known (used to list and end other sessions). */
+  sessionId?: string;
 };
 
 export type AccessDenial =
@@ -41,7 +43,7 @@ export function decideStaffAccess(
 /** Loads the user's current roles and MFA state from the database (never from the client). */
 export async function loadAccessContext(
   db: Database,
-  session: { userId: string; createdAt: Date },
+  session: { userId: string; createdAt: Date; id?: string },
 ): Promise<AccessContext | null> {
   const [user] = await db
     .select({ id: users.id, email: users.email, twoFactorEnabled: users.twoFactorEnabled })
@@ -59,6 +61,7 @@ export async function loadAccessContext(
     roles: roleRows.map((r) => r.role),
     twoFactorEnabled: Boolean(user.twoFactorEnabled),
     sessionCreatedAt: session.createdAt,
+    sessionId: session.id,
   };
 }
 

@@ -5,6 +5,8 @@ import { getDb } from "@/db/client";
 import { formatMoney } from "@/lib/money";
 import { requireUser } from "@/server/auth";
 import { listOrdersForCustomer } from "@/server/customers/orders";
+import { DeleteAccount } from "@/components/account/session-list";
+import { requestDeletionAction } from "./actions";
 import { SignOutButton } from "./sign-out-button";
 
 export const metadata: Metadata = { title: "Account", robots: { index: false } };
@@ -53,6 +55,14 @@ async function Content() {
             ))}
           </ul>
         )}
+      </section>
+      <section className="flex flex-col gap-3">
+        <h2 className="font-mono text-xs uppercase tracking-[0.12em] text-muted">Your data</h2>
+        <p className="text-sm text-muted">Download everything we store about you, or ask us to erase your account. Order records are kept as required by tax law.</p>
+        <a href="/api/account/export" className="self-start border border-field px-4 py-2 font-mono text-[10px] uppercase tracking-[0.14em] hover:border-ink">
+          Download my data
+        </a>
+        {ctx.roles.length === 0 && <DeleteAccount request={requestDeletionAction} />}
       </section>
     </>
   );

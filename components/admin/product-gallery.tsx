@@ -162,7 +162,7 @@ export function ProductGallery({
           {images.length > 1 && <span className="text-[11px] text-muted">Drag to reorder. The first photo is the cover.</span>}
         </div>
         {progress && (
-          <p role="status" className="font-mono text-[10px] uppercase tracking-[0.16em] text-signal">
+          <p role="status" className="font-mono text-[10px] uppercase tracking-[0.16em] text-signal-ink">
             {progress}
           </p>
         )}

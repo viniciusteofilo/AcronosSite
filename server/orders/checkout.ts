@@ -40,6 +40,9 @@ function orderNumber(now: Date) {
   return `ACN-${d}-${rnd}`;
 }
 
+/** Caps how much stock one checkout can hold; larger quantities go through wholesale contact. */
+export const MAX_UNITS_PER_ORDER = 30;
+
 export type StartedCheckout = { orderId: string; redirectUrl: string };
 
 /**
@@ -77,6 +80,7 @@ export async function startCheckout(
   const cart = await getCart(db, ctx.cartId, now);
   if (cart.lines.length === 0) throw new UserError("Your cart is empty.");
   if (cart.hasProblems) throw new UserError("Some items in your cart changed. Review your cart before paying.");
+  if (cart.count > MAX_UNITS_PER_ORDER) throw new UserError(`Online orders are limited to ${MAX_UNITS_PER_ORDER} pieces. For larger quantities, contact us about wholesale.`);
   const currency = method.currency;
   const missing = cart.lines.filter((l) => l.prices[currency] === undefined);
   if (missing.length) throw new UserError(`${missing.map((l) => l.productName).join(", ")} cannot be shipped to this country yet.`);
