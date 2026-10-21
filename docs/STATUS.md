@@ -1,4 +1,4 @@
-# Status — Phase 04 Admin (catalog, content, people)
+# Status — Phase 05 Cart, checkout and payments
 
 Updated 2026-10-21. Legend: **IMPLEMENTED** (built and covered by automated tests) · **MOCKED** (works with simulated data or services) · **PLANNED** (designed, not built) · **BLOCKED** (waiting on a decision, account or file from ACRONOS).
 
@@ -22,6 +22,23 @@ Nothing in this repository is MOCKED. Screens that are not built say so ("Phase 
 | Security headers | CSP, HSTS, nosniff, frame-ancestors none / X-Frame-Options DENY, Referrer-Policy, Permissions-Policy | `curl -I` |
 | CI | GitHub Actions: lint, typecheck, unit + integration on PostgreSQL 16, build, e2e (desktop + mobile), `npm audit`; Dependabot weekly | `.github/` |
 | Design tokens | Colors and fonts from the design system; fonts self-hosted; focus ring; reduced motion | `app/globals.css` |
+
+## Phase 05 — Cart, checkout and payments
+
+All of this works in test mode. Selling for real needs the provider accounts and the shipping and tax decisions; see `docs/PAYMENTS.md`.
+
+| Area | What exists | Proof |
+| --- | --- | --- |
+| Cart | Add to cart from the product page; cart in an HttpOnly cookie; header count; change quantity or remove; lines that sold out or changed are flagged | `tests/integration/checkout.test.ts` |
+| Checkout | Contact, address, country (only active shipping zones), shipping method, payment method, terms; totals preview; server recomputes prices, shipping and currency (USD for USD zones, BRL for BRL zones); one order per idempotency key | integration + `tests/e2e/checkout.spec.ts` |
+| Stock hold | Units reserved atomically when payment starts (never oversold, even with simultaneous buyers); released on expiry, cancel or provider failure; converted to a sale when paid | integration tests |
+| Stripe | Hosted Checkout with Adaptive Pricing, idempotency keys, session expiry = stock hold; webhook signature verified on the raw body; events stored once; refunds | integration with real SDK + stripe-mock e2e |
+| PayPal | Orders v2 REST: create, buyer approval, server capture, webhook verified by PayPal, refunds | integration (simulated HTTP) |
+| Paid only when confirmed | Success page shows "Confirming payment" until the provider confirms; forged webhooks rejected (400); amount mismatch or late payment flagged "Needs attention" | integration + e2e |
+| Admin orders | To ship / needs attention / awaiting payment / shipped / refunded / canceled; detail with items, payment, provider messages, address (shipping permission only); preparing → shipped with tracking → delivered; cancel unpaid; partial or full refund with optional restock | integration + browser check |
+| Store settings | Legal entity, payment keys status and webhook addresses, enable methods, stock hold time, shipping zones and methods; store opens only when everything is ready | integration tests |
+
+**BLOCKED:** Stripe/PayPal accounts (CNPJ), freight per country, DDP duty calculation, US sales tax / NF-e with the accountant, e-mail provider for order e-mails.
 
 ## Phase 04 (part 2) — Content and people
 
@@ -62,7 +79,7 @@ Nothing in this repository is MOCKED. Screens that are not built say so ("Phase 
 
 **Empty states (by design):** with no published products, collections or stories, each page says what will appear there. Policies say they are being finalized; no legal text is invented.
 
-**Still PLANNED:** orders, reports and store settings (Phase 05, with checkout); cart and checkout (Phase 05); confirmation e-mails (needs an e-mail provider); R2 image storage (Phase 07).
+**Still PLANNED:** reports (Phase 06); cart and checkout (Phase 05); confirmation e-mails (needs an e-mail provider); R2 image storage (Phase 07).
 
 ## Phase 02 — Design system (approved 2026-10-20)
 

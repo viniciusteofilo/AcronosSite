@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { AddToCartForm } from "@/app/(store)/cart/add-to-cart";
 import { Button } from "@/components/ui/button";
 
 export type PickerVariant = {
@@ -18,7 +19,7 @@ const SIZE_ORDER = ["XXS", "XS", "S", "M", "L", "XL", "XXL", "XXXL"];
 
 /**
  * Color and size selection for a product. Price, SKU and availability follow the chosen
- * variant. Buying opens in Phase 05 (cart and checkout); until then the button says so.
+ * variant. The button adds to the cart only while the store is open for orders.
  */
 export function VariantPicker({ variants, checkoutOpen = false }: { variants: PickerVariant[]; checkoutOpen?: boolean }) {
   const colors = useMemo(() => {
@@ -119,9 +120,17 @@ export function VariantPicker({ variants, checkoutOpen = false }: { variants: Pi
       )}
 
       <div className="flex flex-col gap-3">
-        <Button type="button" className="w-full" disabled={!checkoutOpen || soldOut || (sizes.length > 0 && !size)}>
-          {soldOut ? "Sold out" : !checkoutOpen ? "Online store opening soon" : sizes.length > 0 && !size ? "Select a size" : "Add to cart"}
-        </Button>
+        {checkoutOpen ? (
+          <AddToCartForm
+            variantId={selected && selected.available > 0 ? selected.id : null}
+            disabled={soldOut || !selected || selected.available <= 0}
+            label={soldOut ? "Sold out" : sizes.length > 0 && !size ? "Select a size" : selected && selected.available <= 0 ? "Sold out" : "Add to cart"}
+          />
+        ) : (
+          <Button type="button" className="w-full" disabled>
+            {soldOut ? "Sold out" : "Online store opening soon"}
+          </Button>
+        )}
         <p className="text-center font-mono text-[10px] uppercase tracking-[0.16em] text-muted">
           {shown.sku}
           {selected && selected.available > 0 && selected.available <= 3 && <> · Only {selected.available} left</>}

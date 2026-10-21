@@ -25,6 +25,10 @@ export default defineConfig({
       BETTER_AUTH_URL: BASE,
       NEXT_PUBLIC_SITE_URL: BASE,
       BETTER_AUTH_SECRET: process.env.BETTER_AUTH_SECRET ?? "e2e-secret-e2e-secret-e2e-secret-1234",
+      // Payments in e2e go to stripe-mock (a local Stripe API simulator), never to Stripe.
+      STRIPE_SECRET_KEY: "sk_test_e2e",
+      STRIPE_WEBHOOK_SECRET: "whsec_e2e_secret",
+      STRIPE_API_BASE: process.env.STRIPE_API_BASE ?? "http://localhost:12111",
     },
   },
 });

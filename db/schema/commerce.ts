@@ -344,7 +344,20 @@ export const orders = pgTable(
     processingStatus: text({ enum: PROCESSING_STATUS }).notNull().default("new"),
     fulfillmentStatus: text({ enum: FULFILLMENT_STATUS }).notNull().default("unfulfilled"),
     shippingAddress: jsonb(),
+    /** Snapshot of the chosen shipping method (name, carrier, price, duties model). */
+    shippingMethod: jsonb(),
+    country: char({ length: 2 }),
     idempotencyKey: text().notNull().unique(),
+    paymentProvider: text({ enum: PAYMENT_PROVIDERS }),
+    /** Stripe Checkout Session id or PayPal order id. */
+    providerCheckoutId: text().unique(),
+    checkoutUrl: text(),
+    /** Secret in the confirmation link, so only the buyer can see the order status page. */
+    publicToken: text(),
+    /** Set when something needs a person to look (e.g. paid after the reservation expired and stock ran out). */
+    needsAttention: text(),
+    paidAt: timestamp({ withTimezone: true }),
+    canceledAt: timestamp({ withTimezone: true }),
     ...timestamps,
   },
   (t) => [
