@@ -24,7 +24,11 @@ const csp = [
   ...(isDev ? [] : ["upgrade-insecure-requests"]),
 ].join("; ");
 
+const isTest = process.env.APP_ENV === "test";
+
 const securityHeaders = [
+  // the private test environment must never appear in search engines
+  ...(isTest ? [{ key: "X-Robots-Tag", value: "noindex, nofollow" }] : []),
   { key: "Content-Security-Policy", value: csp },
   { key: "Strict-Transport-Security", value: "max-age=63072000; includeSubDomains; preload" },
   { key: "X-Content-Type-Options", value: "nosniff" },
