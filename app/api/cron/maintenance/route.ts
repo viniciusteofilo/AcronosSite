@@ -8,8 +8,16 @@ import { runMaintenance } from "@/server/maintenance";
  * Anyone else gets 404, so the endpoint does not reveal itself.
  */
 export async function POST(request: Request) {
+  return run(request.headers.get("x-cron-secret") ?? "");
+}
+
+/** Vercel Cron calls GET with "Authorization: Bearer <CRON_SECRET>". */
+export async function GET(request: Request) {
+  return run((request.headers.get("authorization") ?? "").replace(/^Bearer /, ""));
+}
+
+async function run(given: string) {
   const secret = cloudflare()?.env.CRON_SECRET ?? process.env.CRON_SECRET ?? "";
-  const given = request.headers.get("x-cron-secret") ?? "";
   const ok = secret.length >= 32 && given.length === secret.length && timingSafeEqual(Buffer.from(given), Buffer.from(secret));
   if (!ok) return new Response("Not found", { status: 404 });
   const result = await runMaintenance(getDb());

@@ -12,7 +12,7 @@ import * as schema from "./schema";
 export function createDb(url: string, opts: { hyperdrive?: boolean } = {}) {
   const client = opts.hyperdrive
     ? postgres(url, { max: 5, prepare: true }) // settings recommended by Cloudflare for Hyperdrive
-    : postgres(url, { max: 10, prepare: false });
+    : postgres(url, { max: process.env.VERCEL ? 3 : 10, prepare: false }); // serverless: few connections per instance
   return { db: drizzle(client, { schema, casing: "snake_case" }), client };
 }
 
