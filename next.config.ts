@@ -14,6 +14,7 @@ const csp = [
   `script-src 'self' 'unsafe-inline'${isDev ? " 'unsafe-eval'" : ""}`,
   "style-src 'self' 'unsafe-inline'",
   "img-src 'self' data: blob:",
+  "media-src 'self' blob:", // the site editor reads the chosen campaign video locally to cut it into frames
   "font-src 'self'",
   "connect-src 'self'",
   "frame-ancestors 'none'",

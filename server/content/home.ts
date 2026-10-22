@@ -4,6 +4,7 @@ import type { Database } from "@/db/client";
 import { contentRevisions, pages } from "@/db/schema";
 import { recordAudit } from "@/server/audit/log";
 import { getMediaByIds, type MediaView } from "@/server/media/library";
+import { getSequence, type SequenceView } from "@/server/media/sequences";
 import { AccessDeniedError, decideStaffAccess, type AccessContext } from "@/server/rbac/access";
 
 export const HOME_SLUG = "home";
@@ -21,6 +22,8 @@ const imageId = z.uuid().nullable();
 
 /** Everything on the homepage that changes with a campaign. Defaults are the approved layout copy. */
 export const homeBlocksSchema = z.object({
+  /** Optional campaign film that plays while scrolling, above the hero. */
+  intro: z.object({ sequenceId: z.uuid().nullable(), caption: text(80) }),
   hero: z
     .object({
       imageId,
@@ -43,6 +46,7 @@ export const homeBlocksSchema = z.object({
 export type HomeBlocks = z.infer<typeof homeBlocksSchema>;
 
 export const HOME_DEFAULTS: HomeBlocks = {
+  intro: { sequenceId: null, caption: "Future observed from everyday chaos" },
   hero: {
     imageId: null,
     eyebrow: "ACN // São Paulo · 2018",
@@ -101,7 +105,7 @@ export function imageIdsOf(blocks: HomeBlocks): string[] {
   );
 }
 
-export type ResolvedHome = { blocks: HomeBlocks; media: Map<string, MediaView> };
+export type ResolvedHome = { blocks: HomeBlocks; media: Map<string, MediaView>; film: SequenceView | null };
 
 async function ensureHomeRow(db: Database) {
   await db
@@ -133,7 +137,8 @@ export async function getLiveHome(db: Database, now: Date = new Date()): Promise
   await promoteDueSchedule(db, now);
   const [row] = await db.select({ blocks: pages.blocks }).from(pages).where(eq(pages.slug, HOME_SLUG)).limit(1);
   const blocks = normalizeHome(row?.blocks);
-  return { blocks, media: await getMediaByIds(db, imageIdsOf(blocks)) };
+  const [media, film] = await Promise.all([getMediaByIds(db, imageIdsOf(blocks)), getSequence(db, blocks.intro.sequenceId)]);
+  return { blocks, media, film };
 }
 
 function requireEditor(actor: AccessContext | null) {
@@ -148,6 +153,8 @@ export type HomeEditorState = {
   live: HomeBlocks;
   scheduledAt: Date | null;
   media: Map<string, MediaView>;
+  /** Film of the draft (for the editor and preview). */
+  film: SequenceView | null;
   revisions: { id: string; createdAt: Date }[];
 };
 
@@ -171,6 +178,7 @@ export async function getHomeEditorState(db: Database, actor: AccessContext | nu
     live,
     scheduledAt: row.scheduledAt,
     media: await getMediaByIds(db, [...imageIdsOf(draft), ...imageIdsOf(live)]),
+    film: await getSequence(db, draft.intro.sequenceId),
     revisions,
   };
 }

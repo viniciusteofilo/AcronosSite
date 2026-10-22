@@ -1,6 +1,7 @@
 import "server-only";
 import { decideStaffAccess, type AccessContext } from "@/server/rbac/access";
 import type { Permission } from "@/server/rbac/permissions";
+import { siteUrl } from "@/lib/site-url";
 import { getAccessContext } from "./index";
 
 /**
@@ -18,6 +19,6 @@ export async function staffApi(permission: Permission): Promise<{ ctx: AccessCon
 export function sameOrigin(request: Request): boolean {
   const origin = request.headers.get("origin");
   if (!origin) return false;
-  const expected = new URL(process.env.BETTER_AUTH_URL ?? request.url).origin;
+  const expected = new URL(process.env.BETTER_AUTH_URL || siteUrl()).origin;
   return origin === expected;
 }

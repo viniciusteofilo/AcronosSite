@@ -4,6 +4,8 @@ import { useCallback, useMemo, useState, useTransition } from "react";
 import type { ActionResult } from "@/app/admin/site/actions";
 import type { HomeBlocks } from "@/server/content/home";
 import type { MediaView } from "@/server/media/library";
+import type { UploadedFilm } from "@/lib/video-frames";
+import { FilmSlot } from "./film-slot";
 import { ImageSlot } from "./image-slot";
 import { MediaLibraryDialog } from "./media-library-dialog";
 
@@ -34,7 +36,9 @@ export function HomeEditor({
   revisions,
   products,
   actions,
+  initialFilm = null,
 }: {
+  initialFilm?: UploadedFilm | null;
   initial: HomeBlocks;
   initialMedia: Record<string, MediaView>;
   hasDraft: boolean;
@@ -52,6 +56,7 @@ export function HomeEditor({
   const [pending, start] = useTransition();
   const [libraryFor, setLibraryFor] = useState<ImageKey | null>(null);
   const [when, setWhen] = useState("");
+  const [film, setFilm] = useState<UploadedFilm | null>(initialFilm);
 
   const update = useCallback(<K extends keyof HomeBlocks>(key: K, patch: Partial<HomeBlocks[K]>) => {
     setBlocks((b) => ({ ...b, [key]: { ...b[key], ...patch } }));
@@ -122,6 +127,17 @@ export function HomeEditor({
           {notice.message}
         </p>
       )}
+
+      <Section title="0. Campaign film (optional)" note="Opens the homepage with a short film that plays as visitors scroll. Leave empty to start with the main photo.">
+        <FilmSlot
+          film={film}
+          onChange={(f) => {
+            setFilm(f);
+            update("intro", { sequenceId: f?.id ?? null });
+          }}
+        />
+        {film && <Text label="Caption under the film" value={blocks.intro.caption} max={80} onChange={(v) => update("intro", { caption: v })} />}
+      </Section>
 
       <Section title="1. Main photo and headline" note="The first thing visitors see.">
         <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.2fr)]">

@@ -1,6 +1,6 @@
 # Status — Phase 07 Deployment (ready, waiting for accounts)
 
-Updated 2026-10-21. Legend: **IMPLEMENTED** (built and covered by automated tests) · **MOCKED** (works with simulated data or services) · **PLANNED** (designed, not built) · **BLOCKED** (waiting on a decision, account or file from ACRONOS).
+Updated 2026-10-22. Legend: **IMPLEMENTED** (built and covered by automated tests) · **MOCKED** (works with simulated data or services) · **PLANNED** (designed, not built) · **BLOCKED** (waiting on a decision, account or file from ACRONOS).
 
 Nothing in this repository is MOCKED. Screens that are not built say so ("Phase 04/05") instead of pretending to work.
 
@@ -22,6 +22,16 @@ Nothing in this repository is MOCKED. Screens that are not built say so ("Phase 
 | Security headers | CSP, HSTS, nosniff, frame-ancestors none / X-Frame-Options DENY, Referrer-Policy, Permissions-Policy | `curl -I` |
 | CI | GitHub Actions: lint, typecheck, unit + integration on PostgreSQL 16, build, e2e (desktop + mobile), `npm audit`; Dependabot weekly | `.github/` |
 | Design tokens | Colors and fonts from the design system; fonts self-hosted; focus ring; reduced motion | `app/globals.css` |
+
+## Campaign film on the homepage (scroll-controlled)
+
+| Feature | Status | Notes |
+|---|---|---|
+| Upload a short video in Site editor → "0. Campaign film" | **IMPLEMENTED** | The admin's browser cuts the video into WebP frames (12 per second, up to 12 s; 1600 px for computers, 800 px for phones) and uploads them in batches. MP4 (H.264) in Chrome/Edge/Firefox; Safari cannot create WebP, so use another browser for the upload. |
+| Server checks | **IMPLEMENTED** | Content staff only, same-origin, real WebP with the declared size, max 700 KB per frame, film published only when every frame exists. |
+| Film on the homepage | **IMPLEMENTED** | Plays as the visitor scrolls, under the header; caption on its own band (no text on the film); "Skip" link; frames load after the page, phones get the small ones. Reduced motion or data saver: first frame only. Removing the film brings back the photo opening. |
+| Placeholder film | **MOCKED** | Made by Claude (concrete corridor and the ACRONOS symbol) to show the effect; to be replaced by the real campaign video. |
+| Cleanup of replaced films | **PLANNED** | Old frames stay in storage when a film is replaced; a cleanup job will remove unused ones. |
 
 ## Phase 07 — Deployment (prepared; BLOCKED on ACRONOS accounts)
 
