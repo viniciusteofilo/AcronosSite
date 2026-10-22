@@ -48,9 +48,12 @@ test("search opens from the header and goes to the shop", async ({ page }) => {
 test("mobile menu opens as a modal and closes with Escape", async ({ page, isMobile }) => {
   test.skip(!isMobile, "mobile only");
   await page.goto("/");
-  await page.getByRole("button", { name: "Open menu" }).click();
   const menu = page.getByRole("dialog", { name: "Menu" });
-  await expect(menu).toBeVisible();
+  // a tap that lands before hydration does nothing; retry until the menu opens
+  await expect(async () => {
+    await page.getByRole("button", { name: "Open menu" }).click();
+    await expect(menu).toBeVisible({ timeout: 1000 });
+  }).toPass();
   await expect(page.getByRole("button", { name: "Close menu" })).toBeFocused();
   await page.keyboard.press("Escape");
   await expect(menu).toBeHidden();

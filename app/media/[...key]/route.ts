@@ -1,8 +1,8 @@
 import { getMediaStorage, MEDIA_KEY_PATTERN } from "@/server/media/storage";
 
 /**
- * Serves uploaded images in development (local disk). In production the files are served
- * straight from Cloudflare R2 via NEXT_PUBLIC_MEDIA_BASE_URL and this route is not used.
+ * Serves uploaded images: from the local disk in development and from the R2 bucket on
+ * Cloudflare. Files never change (new upload = new key), so browsers and the CDN cache them for a year.
  */
 export async function GET(_request: Request, { params }: RouteContext<"/media/[...key]">) {
   const key = `media/${(await params).key.join("/")}`;

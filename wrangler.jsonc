@@ -1,0 +1,35 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  // Cloudflare Worker for the ACRONOS site (built with OpenNext). See docs/DEPLOY.md.
+  "name": "acronos-site",
+  "main": "custom-worker.ts",
+  "compatibility_date": "2026-10-01",
+  "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
+  "assets": { "directory": ".open-next/assets", "binding": "ASSETS" },
+  "services": [{ "binding": "WORKER_SELF_REFERENCE", "service": "acronos-site" }],
+  "observability": { "enabled": true },
+  "triggers": { "crons": ["*/10 * * * *"] },
+  "r2_buckets": [
+    // Next.js page cache (prerendered pages)
+    { "binding": "NEXT_INC_CACHE_R2_BUCKET", "bucket_name": "acronos-next-cache" },
+    // Uploaded images
+    { "binding": "MEDIA_BUCKET", "bucket_name": "acronos-media" }
+  ],
+  "hyperdrive": [
+    {
+      "binding": "HYPERDRIVE",
+      // Replace with the id printed by `wrangler hyperdrive create` (docs/DEPLOY.md, step 4)
+      "id": "00000000000000000000000000000000",
+      // Used only by local preview
+      "localConnectionString": "postgres://acronos:acronos_dev@localhost:5432/acronos_dev"
+    }
+  ],
+  "vars": {
+    "NEXT_PUBLIC_SITE_URL": "https://acronos.com.br",
+    "BETTER_AUTH_URL": "https://acronos.com.br",
+    "SITE_URL": "https://acronos.com.br",
+    "PAYPAL_ENV": "sandbox"
+  }
+  // Secrets (never in this file): wrangler secret put BETTER_AUTH_SECRET / CRON_SECRET /
+  // STRIPE_SECRET_KEY / STRIPE_WEBHOOK_SECRET / PAYPAL_CLIENT_ID / PAYPAL_CLIENT_SECRET / PAYPAL_WEBHOOK_ID
+}
