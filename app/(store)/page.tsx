@@ -26,5 +26,5 @@ async function HomeContent() {
   const db = getDb();
   const home = await getLiveHome(db);
   const products = await getFeaturedProducts(db, home.blocks);
-  return <HomeView blocks={home.blocks} media={home.media} products={products} />;
+  return <HomeView blocks={home.blocks} media={home.media} products={products} film={home.film} />;
 }

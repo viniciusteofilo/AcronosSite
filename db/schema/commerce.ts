@@ -513,3 +513,21 @@ export const exchangeRates = pgTable(
   },
   (t) => [primaryKey({ columns: [t.base, t.quote, t.rateDate] })],
 );
+
+/**
+ * A short campaign film cut into still frames (WebP) that play as the visitor scrolls.
+ * Frames live in storage under seq/<id>/d/NNNN.webp (desktop) and seq/<id>/m/NNNN.webp (phones).
+ */
+export const scrollSequences = pgTable("scroll_sequences", {
+  id: uuid().primaryKey().defaultRandom(),
+  frameCount: integer().notNull(),
+  width: integer().notNull(),
+  height: integer().notNull(),
+  mobileWidth: integer().notNull(),
+  mobileHeight: integer().notNull(),
+  originalName: text(),
+  status: text({ enum: ["uploading", "ready"] }).notNull().default("uploading"),
+  totalBytes: integer().notNull().default(0),
+  createdBy: uuid().references(() => users.id, { onDelete: "set null" }),
+  createdAt: timestamp({ withTimezone: true }).notNull().defaultNow(),
+});

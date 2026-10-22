@@ -49,6 +49,7 @@ async function Editor() {
       scheduledAt={state.scheduledAt?.toISOString() ?? null}
       revisions={state.revisions.map((r) => ({ id: r.id, createdAt: r.createdAt.toISOString() }))}
       products={catalog.items.map((p) => ({ id: p.id, name: p.name }))}
+      initialFilm={state.film}
       actions={{
         save: saveDraftAction,
         publish: publishAction,

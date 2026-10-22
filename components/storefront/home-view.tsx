@@ -4,7 +4,9 @@ import { ButtonLink } from "@/components/ui/button";
 import { Eyebrow, SectionTitle } from "@/components/ui/eyebrow";
 import type { HomeBlocks } from "@/server/content/home";
 import type { MediaView } from "@/server/media/library";
+import type { SequenceView } from "@/server/media/sequences";
 import { ProductCard, type ProductCardData } from "./product-card";
+import { ScrollFilm } from "./scroll-film";
 import { SiteImage } from "./site-image";
 
 /**
@@ -16,10 +18,12 @@ export function HomeView({
   blocks,
   media,
   products,
+  film = null,
 }: {
   blocks: HomeBlocks;
   media: Map<string, MediaView>;
   products: ProductCardData[];
+  film?: SequenceView | null;
 }) {
   const img = (id: string | null) => (id ? (media.get(id) ?? null) : null);
   const { hero, featuredCollection: fc, featuredProducts: fp, manifesto, lab, scifi } = blocks;
@@ -28,6 +32,7 @@ export function HomeView({
 
   return (
     <>
+      {film && <ScrollFilm film={film} caption={blocks.intro.caption} label="Campaign film" />}
       <section aria-labelledby="hero-title" className="relative overflow-hidden border-b border-line">
         <div className="mx-auto grid max-w-[1440px] gap-10 px-4 pb-12 pt-10 sm:px-8 lg:grid-cols-[1.05fr_1fr] lg:gap-0 lg:pb-0 lg:pt-0">
           <div className="relative flex flex-col justify-between gap-12 lg:py-20 lg:pr-14">
