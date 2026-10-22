@@ -1,4 +1,4 @@
-# Status — Phase 06 Security, privacy, accessibility, performance
+# Status — Phase 07 Deployment (ready, waiting for accounts)
 
 Updated 2026-10-21. Legend: **IMPLEMENTED** (built and covered by automated tests) · **MOCKED** (works with simulated data or services) · **PLANNED** (designed, not built) · **BLOCKED** (waiting on a decision, account or file from ACRONOS).
 
@@ -22,6 +22,26 @@ Nothing in this repository is MOCKED. Screens that are not built say so ("Phase 
 | Security headers | CSP, HSTS, nosniff, frame-ancestors none / X-Frame-Options DENY, Referrer-Policy, Permissions-Policy | `curl -I` |
 | CI | GitHub Actions: lint, typecheck, unit + integration on PostgreSQL 16, build, e2e (desktop + mobile), `npm audit`; Dependabot weekly | `.github/` |
 | Design tokens | Colors and fonts from the design system; fonts self-hosted; focus ring; reduced motion | `app/globals.css` |
+
+## Phase 07 — Deployment (prepared; BLOCKED on ACRONOS accounts)
+
+| Area | What exists | Proof |
+| --- | --- | --- |
+| Cloudflare build | OpenNext adapter, `wrangler.jsonc`, custom Worker with cron, R2 page cache | local Workers runtime preview 2026-10-22 |
+| Database on Workers | One client per request through Hyperdrive; Better Auth per request; Node path unchanged for dev/tests | preview: sign-in with 2FA, admin, product pages |
+| Images on R2 | `MEDIA_BUCKET` binding, served with one-year immutable cache | preview: upload then download |
+| Cron | Every 10 min: release abandoned checkout holds, delete expired sessions/verifications/rate-limit rows, carts older than 60 days | integration + preview |
+| Deploy pipeline | GitHub Actions "Deploy": secret check, backup, migrations, create R2/Hyperdrive, build, Worker secrets, deploy, smoke test; "First super admin" | `.github/workflows/` |
+| CI | Builds the Worker on every change and fails above 10 MiB | `.github/workflows/ci.yml` |
+
+**BLOCKED (ACRONOS):**
+- authorize Workers Paid (US$5/month)
+- Cloudflare account and API token
+- Neon account
+- GitHub secrets
+- authorization for the DNS change at Registro.br
+
+See `docs/DEPLOY.md`.
 
 ## Phase 06 — Hardening
 
@@ -93,7 +113,7 @@ All of this works in test mode. Selling for real needs the provider accounts and
 
 **Empty states (by design):** with no published products, collections or stories, each page says what will appear there. Policies say they are being finalized; no legal text is invented.
 
-**Still PLANNED:** deployment (Phase 07). cart and checkout (Phase 05); confirmation e-mails (needs an e-mail provider); R2 image storage (Phase 07).
+**Still PLANNED:** transactional e-mail (needs a provider). cart and checkout (Phase 05); confirmation e-mails (needs an e-mail provider); R2 image storage (Phase 07).
 
 ## Phase 02 — Design system (approved 2026-10-20)
 

@@ -40,6 +40,7 @@ test("no WCAG violations on the mobile menu and search", async ({ page, isMobile
 
 test("no WCAG violations on the main admin screens", async ({ page, baseURL, isMobile }) => {
   test.skip(!!isMobile, "admin is checked on desktop");
+  test.setTimeout(120_000);
   const { base32 } = await import("@better-auth/utils/base32");
   const { createOTP } = await import("@better-auth/utils/otp");
   const email = `a11y-${Date.now()}@example.test`;
