@@ -1,3 +1,5 @@
+import { siteUrl } from "@/lib/site-url";
+import { newsletterToken } from "@/server/email/notify";
 import { and, asc, desc, eq, sql, type SQL } from "drizzle-orm";
 import { z } from "zod";
 import type { Database } from "@/db/client";
@@ -124,7 +126,12 @@ export async function exportSubscribersCsv(db: Database, actor: AccessContext | 
     return `"${s.replace(/"/g, '""')}"`;
   };
   await recordAudit(db, { actorId: ctx.userId, action: "newsletter.export", entityType: "newsletter", after: { rows: items.length } });
-  return ["email,status,source,consent_at,created_at", ...items.map((i) => [i.email, i.status, i.source, i.consentAt, i.createdAt].map(cell).join(","))].join("\r\n");
+  // each row carries its own unsubscribe link, to put in every campaign sent from another tool
+  const unsub = (email: string) => `${siteUrl()}/newsletter/unsubscribe?t=${encodeURIComponent(newsletterToken(email, "unsubscribe"))}`;
+  return [
+    "email,status,source,consent_at,created_at,unsubscribe_url",
+    ...items.map((i) => [i.email, i.status, i.source, i.consentAt, i.createdAt, unsub(i.email)].map(cell).join(",")),
+  ].join("\r\n");
 }
 
 export async function unsubscribe(db: Database, actor: AccessContext | null, id: string) {

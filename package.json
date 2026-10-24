@@ -25,6 +25,7 @@
     "@vercel/blob": "2.8.1",
     "better-auth": "^1.7.12",
     "drizzle-orm": "^0.45.4",
+    "mammoth": "1.13.0",
     "next": "16.4.2",
     "postgres": "^3.4.9",
     "qrcode": "^1.5.4",

@@ -1,3 +1,4 @@
+import { notifyOrderRefunded, notifyOrderShipped } from "@/server/email/notify";
 import { randomUUID } from "node:crypto";
 import { and, desc, eq, sql, type SQL } from "drizzle-orm";
 import { z } from "zod";
@@ -163,6 +164,7 @@ export async function addShipment(db: Database, actor: AccessContext | null, id:
     await tx.update(orders).set({ fulfillmentStatus: "shipped", processingStatus: "completed", updatedAt: now }).where(eq(orders.id, o.id));
     await recordAudit(tx, { actorId: ctx.userId, action: "order.ship", entityType: "order", entityId: o.id, after: input });
   });
+  await notifyOrderShipped(db, z.uuid().parse(id));
 }
 
 export async function markDelivered(db: Database, actor: AccessContext | null, id: string) {
@@ -242,5 +244,6 @@ export async function refundOrder(db: Database, actor: AccessContext | null, id:
     await recordAudit(tx, { actorId: ctx.userId, action: "order.refund", entityType: "order", entityId: o.id, after: { amountMinor: input.amountMinor, status: result.status, restock: input.restock } });
   });
   if (result.status === "failed") throw new UserError("The provider rejected the refund. Nothing was refunded.");
+  await notifyOrderRefunded(db, o.id, input.amountMinor, fully);
   return { status: result.status };
 }

@@ -121,7 +121,7 @@ describe("customers, messages, newsletter, staff", () => {
     await db.insert(newsletterSubscribers).values({ email: `=cmd-${T}@example.test`, status: "pending", consentSource: "footer", consentAt: new Date() });
     await expect(exportSubscribersCsv(db, editor)).rejects.toBeInstanceOf(AccessDeniedError);
     const csv = await exportSubscribersCsv(db, manager);
-    expect(csv.split("\r\n")[0]).toBe("email,status,source,consent_at,created_at");
+    expect(csv.split("\r\n")[0]).toBe("email,status,source,consent_at,created_at,unsubscribe_url");
     expect(csv).toContain(`"'=cmd-${T}@example.test"`);
   });
 
@@ -136,5 +136,29 @@ describe("customers, messages, newsletter, staff", () => {
     expect(await db.select().from(userRoles).where(eq(userRoles.userId, person.id))).toHaveLength(0);
     const self = await runAdmin(() => revokeStaffRole(db, owner, { targetUserId: owner.userId, role: "super_admin" }), "ok");
     expect(self.ok).toBe(false);
+  });
+});
+
+describe("story import", () => {
+  it("creates drafts only, keeps provenance, never reuses a web address, sanitizes", async () => {
+    const { importStories } = await import("@/server/content/stories-admin");
+    const { stories } = await import("@/db/schema");
+    const { eq: eq2 } = await import("drizzle-orm");
+    const { AccessDeniedError: Denied } = await import("@/server/rbac/access");
+    const { runAdmin: run } = await import("@/server/admin/errors");
+    const { ctxFor: ctx, makeUser: mk } = await import("../helpers");
+    const editor = ctx(await mk(db, { roles: ["content_editor"], twoFactorEnabled: true }), ["content_editor"]);
+    const title = `Imported Gate ${Date.now()}`;
+    const item = { title, body: "<p>Text <script>alert(1)</script>here.</p>", fileName: "gate.docx" };
+    const r = await importStories(db, editor, { authorName: "A. Writer", items: [item, item] });
+    expect(r.every((x) => x.ok)).toBe(true);
+    const rows = await Promise.all(r.map(async (x) => (await db.select().from(stories).where(eq2(stories.id, x.id!)))[0]));
+    expect(rows.map((s) => s.status)).toEqual(["draft", "draft"]);
+    expect(rows[1].slug).toBe(`${rows[0].slug}-2`);
+    expect(rows[0]).toMatchObject({ authorName: "A. Writer", importedFrom: "file: gate.docx" });
+    expect(rows[0].body).not.toContain("script");
+    expect((await run(() => importStories(db, editor, { authorName: "", items: [item] }), "ok")).ok).toBe(false);
+    const customer = ctx(await mk(db), []);
+    await expect(importStories(db, customer, { authorName: "X", items: [item] })).rejects.toBeInstanceOf(Denied);
   });
 });

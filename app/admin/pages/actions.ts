@@ -13,6 +13,7 @@ import {
   getStoryRevision,
   saveLabProject,
   saveLabUpdate,
+  importStories,
   saveStory,
 } from "@/server/content/stories-admin";
 
@@ -87,4 +88,11 @@ export async function rejectPrivacyAction(id: string) {
 
 export async function resetTwoFactorAction(userId: string) {
   return runAdmin(async () => resetTwoFactor(getDb(), await getAccessContext(), userId), "Two-factor turned off and the person was signed out. They must set it up again to enter the admin.");
+}
+
+export async function importStoryAction(input: unknown) {
+  const r = await runAdmin(async () => importStories(getDb(), await getAccessContext(), input), "ok");
+  if (!r.ok) return r;
+  const [first] = r.data ?? [];
+  return first?.ok ? { ok: true as const, message: "Imported.", data: first } : { ok: false as const, message: first?.message ?? "Could not be saved." };
 }

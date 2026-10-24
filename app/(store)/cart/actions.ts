@@ -1,5 +1,6 @@
 "use server";
 
+import { rememberAddress } from "@/server/account/profile";
 import { refresh } from "next/cache";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
@@ -142,6 +143,10 @@ export async function checkoutAction(
       },
     );
     url = r.redirectUrl;
+    if (ctx && form.get("saveAddress") === "on") {
+      const address = { fullName: values.fullName, line1: values.line1, line2: values.line2, city: values.city, region: values.region, postalCode: values.postalCode, country: values.country, phone: values.phone };
+      await rememberAddress(db, ctx, address).catch((e) => console.error("[checkout] save address", e));
+    }
   } catch (e) {
     if (e instanceof UserError)
       return { ok: false, message: e.message, field: e.field, values };

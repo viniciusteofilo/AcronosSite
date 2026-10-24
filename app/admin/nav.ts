@@ -26,5 +26,6 @@ export const ADMIN_NAV: AdminNavItem[] = [
   { label: "Reports", href: "/admin/reports", permission: "reports:view", status: "implemented" },
   { label: "Users", href: "/admin/users", permission: "users:manage", status: "implemented" },
   { label: "Privacy requests", href: "/admin/privacy", permission: "privacy:handle", status: "implemented" },
+  { label: "E-mails", href: "/admin/emails", permission: "settings:manage", status: "implemented" },
   { label: "Settings", href: "/admin/settings", permission: "settings:manage", status: "implemented" },
 ];

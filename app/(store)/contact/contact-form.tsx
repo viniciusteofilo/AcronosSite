@@ -3,6 +3,7 @@
 import { useActionState } from "react";
 import { Button } from "@/components/ui/button";
 import { Field } from "@/components/ui/field";
+import { HumanCheck } from "@/components/ui/turnstile";
 import type { FormResult } from "@/server/marketing/forms";
 
 const TOPICS = [
@@ -70,6 +71,7 @@ export function ContactForm({ action }: { action: (prev: FormResult | null, form
         </p>
       )}
       <div>
+        <HumanCheck action="contact" resetKey={state} />
         <Button type="submit" disabled={pending}>
           {pending ? "Sending…" : "Send message"}
         </Button>

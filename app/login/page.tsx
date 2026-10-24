@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { Suspense } from "react";
 import { LogoLockup } from "@/components/brand/logo";
 import { safeNextPath } from "@/lib/safe-redirect";
@@ -14,6 +15,17 @@ export default function LoginPage({ searchParams }: PageProps<"/login">) {
       <Suspense fallback={null}>
         <LoginFormWithNext searchParams={searchParams} />
       </Suspense>
+      <div className="flex flex-col gap-3 text-sm text-muted">
+        <Link href="/login/forgot" className="self-start underline underline-offset-4 hover:text-ink">
+          Forgot your password?
+        </Link>
+        <p>
+          New to ACRONOS?{" "}
+          <Link href="/signup" className="text-ink underline underline-offset-4">
+            Create account
+          </Link>
+        </p>
+      </div>
     </main>
   );
 }
