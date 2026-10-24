@@ -4,6 +4,7 @@ export const EMAIL_KINDS = [
   "verify_email",
   "reset_password",
   "password_changed",
+  "change_email",
   "order_confirmation",
   "order_shipped",
   "order_refunded",

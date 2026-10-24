@@ -9,7 +9,7 @@ export const metadata: Metadata = { title: "Create account", robots: { index: fa
 
 export default function SignupPage({ searchParams }: PageProps<"/signup">) {
   return (
-    <main className="mx-auto flex w-full max-w-sm flex-1 flex-col justify-center gap-10 px-4 py-16">
+    <div className="mx-auto flex w-full max-w-sm flex-1 flex-col justify-center gap-10 px-4 py-16">
       <LogoLockup className="w-44 self-center" />
       <h1 className="font-display text-2xl uppercase tracking-[0.08em]">Create account</h1>
       <Suspense fallback={null}>
@@ -21,7 +21,7 @@ export default function SignupPage({ searchParams }: PageProps<"/signup">) {
           Sign in
         </Link>
       </p>
-    </main>
+    </div>
   );
 }
 

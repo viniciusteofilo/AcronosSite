@@ -342,3 +342,31 @@ describe("account e-mails through Better Auth", () => {
     ).toHaveLength(0);
   });
 });
+
+describe("changing the account e-mail", () => {
+  it("the current address approves, the new address confirms; nothing changes before", async () => {
+    const { users } = await import("@/db/schema");
+    const password = "correct horse battery staple";
+    const oldEmail = addr("old");
+    const newEmail = addr("new");
+    const signUp = await auth.api.signUpEmail({ body: { email: oldEmail, password, name: "Ana" }, asResponse: true });
+    const cookie = signUp.headers.getSetCookie().map((c) => c.split(";")[0]).join("; ");
+    const [u] = await db.select().from(users).where(eq(users.email, oldEmail));
+    await db.update(users).set({ emailVerified: true }).where(eq(users.id, u.id));
+    const signIn = await auth.api.signInEmail({ body: { email: oldEmail, password }, asResponse: true });
+    const headers = new Headers({ cookie: signIn.headers.getSetCookie().map((c) => c.split(";")[0]).join("; ") || cookie });
+
+    await auth.api.changeEmail({ body: { newEmail, callbackURL: "/account?email=changed" }, headers });
+    const approve = (await mailsTo(oldEmail)).find((m) => m.kind === "change_email")!;
+    expect(approve.bodyText).toContain(newEmail);
+    expect((await db.select().from(users).where(eq(users.id, u.id)))[0].email).toBe(oldEmail);
+
+    const step1 = new URL(/(https?:\/\/\S+\/verify-email\?\S+)/.exec(approve.bodyText!)![1]);
+    await auth.handler(new Request(step1, { headers }));
+    expect((await db.select().from(users).where(eq(users.id, u.id)))[0].email).toBe(oldEmail);
+    const confirm = (await mailsTo(newEmail)).find((m) => m.kind === "verify_email")!;
+    const step2 = new URL(/(https?:\/\/\S+\/verify-email\?\S+)/.exec(confirm.bodyText!)![1]);
+    await auth.handler(new Request(step2, { headers }));
+    expect((await db.select().from(users).where(eq(users.id, u.id)))[0]).toMatchObject({ email: newEmail, emailVerified: true });
+  });
+});

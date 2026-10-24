@@ -70,3 +70,24 @@ export async function changePasswordAction(input: unknown) {
     await sendEmail(db, { kind: "password_changed", to: profile.email, ref: ctx!.userId, ...passwordChangedMessage(profile.name) });
   }, "Password changed. Other devices were signed out.");
 }
+
+const emailInput = z.email("Enter a valid e-mail address.").max(254);
+
+/** Starts an e-mail change: same answer whether or not the new address is taken. */
+export async function changeEmailAction(newEmail: unknown) {
+  return runAdmin(async () => {
+    const db = getDb();
+    const ctx = await getAccessContext();
+    const profile = await getProfile(db, ctx);
+    const email = emailInput.parse(typeof newEmail === "string" ? newEmail.trim().toLowerCase() : newEmail);
+    if (email === profile.email.toLowerCase()) throw new UserError("That is already your e-mail.");
+    if (!emailAvailable()) throw new UserError("E-mail is not available yet, so the address cannot be changed now. Write to us from the contact page.");
+    if (!(await takeRateLimit(db, `change-email:${ctx!.userId}`, 3, 3600))) throw new UserError("Too many attempts. Try again in an hour.");
+    await getAuth().api.changeEmail({ body: { newEmail: email, callbackURL: "/account?email=changed" }, headers: await headers() });
+    return profile.emailVerified;
+  }, (verified) =>
+    verified
+      ? "Check your current e-mail and approve the change; then confirm from the new address. Nothing changes until both are done."
+      : "We sent a link to the new address. The e-mail changes when you open it.",
+  );
+}

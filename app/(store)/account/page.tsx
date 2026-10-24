@@ -3,13 +3,13 @@ import Link from "next/link";
 import { Suspense } from "react";
 import { getDb } from "@/db/client";
 import { DeleteAccount } from "@/components/account/session-list";
-import { NameForm, VerifyNotice } from "@/components/account/profile-forms";
+import { EmailChangeForm, NameForm, VerifyNotice } from "@/components/account/profile-forms";
 import { formatMoney } from "@/lib/money";
 import { PAY_LABEL, SHIP_LABEL } from "@/lib/order-labels";
 import { getProfile } from "@/server/account/profile";
 import { requireUser } from "@/server/auth";
 import { listOrdersForCustomer } from "@/server/customers/orders";
-import { requestDeletionAction, resendVerificationAction, updateNameAction } from "./actions";
+import { changeEmailAction, requestDeletionAction, resendVerificationAction, updateNameAction } from "./actions";
 import { SignOutButton } from "./sign-out-button";
 
 export const metadata: Metadata = { title: "Account", robots: { index: false } };
@@ -39,6 +39,11 @@ async function Content({ searchParams }: Pick<PageProps<"/account">, "searchPara
           Thank you, your e-mail is confirmed.
         </p>
       )}
+      {sp.email === "changed" && (
+        <p role="status" className="border border-line bg-surface p-4 text-sm">
+          Step done. Your account e-mail is now <strong>{profile.email}</strong>. If this is still the old address, open the link we sent to the new one to finish.
+        </p>
+      )}
       {sp.welcome === "1" && (
         <p role="status" className="border border-line bg-surface p-4 text-sm">
           Welcome to ACRONOS. Your account is ready.
@@ -52,6 +57,7 @@ async function Content({ searchParams }: Pick<PageProps<"/account">, "searchPara
         <p className="text-sm">
           <span className="text-muted">E-mail:</span> {profile.email} {profile.emailVerified && <span className="ml-1 font-mono text-[10px] uppercase tracking-[0.14em] text-signal-ink">Confirmed</span>}
         </p>
+        <EmailChangeForm change={changeEmailAction} />
         <div className="flex flex-wrap gap-6 font-mono text-xs uppercase tracking-[0.12em]">
           {ctx.roles.length > 0 && (
             <Link href="/admin" className="text-muted hover:text-ink">

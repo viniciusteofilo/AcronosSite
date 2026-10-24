@@ -10,6 +10,7 @@ export const EMAIL_KIND_LABELS: Record<(typeof EMAIL_KINDS)[number], string> = {
   verify_email: "Confirm e-mail",
   reset_password: "Password reset",
   password_changed: "Password changed",
+  change_email: "E-mail change (approve)",
   order_confirmation: "Order confirmed",
   order_shipped: "Order shipped",
   order_refunded: "Refund",

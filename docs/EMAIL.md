@@ -6,6 +6,7 @@ The store sends these messages (Admin → E-mails lists every one):
 | --- | --- | --- |
 | Account created | customer | Confirm e-mail (link valid 24 h) |
 | "Forgot your password?" | customer | Reset link (valid 1 h, one use; every device is signed out after the change) |
+| Change of e-mail requested | current address, then new address | Approve link, then confirm link; nothing changes before both |
 | Password changed | customer | Notice, with a link to reset if it was not them |
 | Payment confirmed by Stripe/PayPal | buyer | Order confirmation with items and totals |
 | Shipment added in the admin | buyer | Carrier, tracking number and tracking link |
