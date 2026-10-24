@@ -15,6 +15,8 @@ export const storeSettingsSchema = z.object({
   paypalEnabled: z.boolean().default(false),
   /** Minutes a started checkout holds the stock (Stripe requires at least 30). */
   reservationMinutes: z.number().int().min(30).max(120).default(30),
+  /** Where the team receives store notifications (new messages from the contact form). */
+  notifyEmail: z.email().nullable().default(null),
 });
 export type StoreSettings = z.infer<typeof storeSettingsSchema>;
 
@@ -62,6 +64,7 @@ const settingsInput = z.object({
   stripeEnabled: z.boolean().optional(),
   paypalEnabled: z.boolean().optional(),
   reservationMinutes: z.number().int().min(30).max(120).optional(),
+  notifyEmail: z.union([z.email("Enter a valid e-mail address.").max(254), z.literal("").transform(() => null), z.null()]).optional(),
 });
 
 export async function saveStoreSettings(db: Database, actor: AccessContext | null, raw: unknown) {

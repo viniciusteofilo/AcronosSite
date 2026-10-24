@@ -37,6 +37,14 @@ Reference: OWASP ASVS level 2 and OWASP Top 10. No system is immune to attack; t
   - Drill run on 2026-10-21: OK.
   - Neon point-in-time recovery is added in Phase 07.
 
+## Added with store e-mails and bot check (2026-10-23)
+
+- **Account recovery:** password reset links expire after 1 hour and work once; every device is signed out after a reset or a password change, and the person gets a notice by e-mail. "Forgot password" and sign-up give the same answer whether or not an address has an account.
+- **Staff sign-in alert:** a staff member gets an e-mail when their account signs in from a browser it had no session on.
+- **E-mail content:** with a real provider only recipient, subject and status are stored. Full messages (with links) are stored only in the test outbox; the outbox screen is limited to super admins and shows messages in a sandboxed frame.
+- **Newsletter links:** confirm/unsubscribe links are signed with the server secret (confirm expires in 7 days); opening a link changes nothing until the person presses the button, so e-mail scanners cannot confirm or cancel.
+- **Bot check:** Cloudflare Turnstile on contact, newsletter, sign-up and password-reset requests once `NEXT_PUBLIC_TURNSTILE_SITE_KEY` and `TURNSTILE_SECRET_KEY` are set (free; needs the Cloudflare account). Verification fails closed. Without keys, the honeypot field and per-IP rate limits remain.
+
 ## Content Security Policy decision (2026-10-21)
 
 - **Scripts keep `'unsafe-inline'`.** Next.js streams page data in inline scripts.

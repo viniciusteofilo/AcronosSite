@@ -2,6 +2,7 @@
 
 import { useActionState, useId } from "react";
 import { Button } from "@/components/ui/button";
+import { HumanCheck } from "@/components/ui/turnstile";
 import type { FormResult } from "@/server/marketing/forms";
 
 export function NewsletterForm({
@@ -52,6 +53,7 @@ export function NewsletterForm({
         />
         I agree to receive e-mails from ACRONOS. I can unsubscribe at any time.
       </label>
+      <HumanCheck action="newsletter" resetKey={state} />
       {/* Honeypot for bots: hidden from people and screen readers. */}
       <input type="text" name="website" tabIndex={-1} autoComplete="off" aria-hidden="true" className="hidden" />
       <input type="hidden" name="source" value={source} />

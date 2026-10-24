@@ -11,6 +11,7 @@ import {
   PageHeader,
 } from "@/components/storefront/page-parts";
 import { ButtonLink } from "@/components/ui/button";
+import { listAddresses } from "@/server/account/profile";
 import { getAccessContext } from "@/server/auth";
 import { CART_COOKIE, getCart } from "@/server/cart/cart";
 import {
@@ -57,11 +58,14 @@ async function Checkout() {
     );
   }
   if (cart.lines.length === 0 || cart.hasProblems) redirect("/cart");
+  const saved = ctx ? await listAddresses(db, ctx) : [];
   return (
     <CheckoutForm
       action={checkoutAction}
       idempotencyKey={randomUUID()}
       email={ctx?.email ?? ""}
+      signedIn={!!ctx}
+      saved={saved}
       providers={ready.providers}
       options={Object.fromEntries(options)}
       lines={cart.lines.map((l) => ({

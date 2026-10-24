@@ -2,7 +2,7 @@ import { and, asc, desc, eq, sql } from "drizzle-orm";
 import { z } from "zod";
 import type { Database } from "@/db/client";
 import { contentRevisions, labProjects, labUpdates, LAB_STATUS, stories, storyCategories, storyCategoryLinks, users } from "@/db/schema";
-import { SLUG_PATTERN } from "@/lib/slug";
+import { SLUG_PATTERN, slugify } from "@/lib/slug";
 import { UserError, authorize } from "@/server/admin/errors";
 import { recordAudit } from "@/server/audit/log";
 import { getMediaByIds, type MediaView } from "@/server/media/library";
@@ -293,4 +293,51 @@ export async function deleteLabItem(db: Database, actor: AccessContext | null, k
   const [row] = await db.delete(table).where(eq(table.id, z.uuid().parse(id))).returning({ id: table.id });
   if (!row) throw new UserError("Already deleted.");
   await recordAudit(db, { actorId: ctx.userId, action: `lab_${kind}.delete`, entityType: `lab_${kind}`, entityId: id });
+}
+
+// ── import ──────────────────────────────────────────────────────────────────────────────────
+
+const importInput = z.object({
+  authorName: z.string().trim().min(1, "Enter the author's name for these stories.").max(120),
+  items: z
+    .array(
+      z.object({
+        title: z.string().trim().min(1, "Every story needs a title").max(160),
+        body: z.string().min(1).max(400_000, "A story is too long for one page (400k characters)"),
+        fileName: z.string().trim().max(200),
+      }),
+    )
+    .min(1, "Choose at least one file.")
+    .max(50, "Import up to 50 stories at a time."),
+});
+
+/**
+ * Creates one draft per manuscript. Nothing is published: each draft is reviewed in the editor
+ * first. Web addresses come from the titles and never overwrite an existing story.
+ */
+export async function importStories(db: Database, actor: AccessContext | null, raw: unknown) {
+  const ctx = authorize(actor, "content:write");
+  const input = importInput.parse(raw);
+  const taken = new Set((await db.select({ slug: stories.slug }).from(stories)).map((r) => r.slug));
+  const results: { title: string; ok: boolean; id?: string; message?: string }[] = [];
+  for (const it of input.items) {
+    const base = slugify(it.title) || "story";
+    let candidate = base.slice(0, 76);
+    for (let n = 2; taken.has(candidate); n++) candidate = `${base.slice(0, 76)}-${n}`;
+    try {
+      const { id } = await saveStory(db, ctx, {
+        title: it.title,
+        slug: candidate,
+        authorName: input.authorName,
+        body: it.body,
+        status: "draft",
+        importedFrom: `file: ${it.fileName}`.slice(0, 200),
+      });
+      taken.add(candidate);
+      results.push({ title: it.title, ok: true, id });
+    } catch (e) {
+      results.push({ title: it.title, ok: false, message: e instanceof UserError ? e.message : "Could not be saved." });
+    }
+  }
+  return results;
 }
