@@ -68,6 +68,18 @@ export function passwordChangedMessage(name: string) {
   };
 }
 
+export function changeEmailMessage(name: string, newEmail: string, url: string) {
+  return {
+    subject: "Approve your new e-mail address",
+    ...layout("Approve the e-mail change", [
+      { p: `Hello ${name},` },
+      { p: `Someone asked to change the e-mail of your ACRONOS account to ${newEmail}. Approve it here; then we will send a link to the new address to finish.` },
+      { button: { label: "Approve change", url } },
+      { small: "If it was not you, ignore this message and change your password: your e-mail stays the same." },
+    ]),
+  };
+}
+
 type OrderForEmail = {
   number: string;
   currency: string;

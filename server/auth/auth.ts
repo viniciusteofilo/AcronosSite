@@ -7,7 +7,7 @@ import type { Database } from "@/db/client";
 import * as schema from "@/db/schema";
 import { siteUrl } from "@/lib/site-url";
 import { sendEmail } from "@/server/email/send";
-import { passwordChangedMessage, resetPasswordMessage, verifyEmailMessage } from "@/server/email/templates";
+import { changeEmailMessage, passwordChangedMessage, resetPasswordMessage, verifyEmailMessage } from "@/server/email/templates";
 import { alertStaffSignIn } from "./alerts";
 import { bootstrapTestAdmin } from "./bootstrap";
 
@@ -54,6 +54,15 @@ export function createAuth(db: Database) {
         await sendEmail(db, { kind: "verify_email", to: user.email, ref: user.id, ...verifyEmailMessage(user.name, url) });
       },
     },
+    user: {
+      // the current address approves first, then the new address confirms; nothing changes before both
+      changeEmail: {
+        enabled: true,
+        sendChangeEmailConfirmation: async ({ user, newEmail, url }) => {
+          await sendEmail(db, { kind: "change_email", to: user.email, ref: user.id, ...changeEmailMessage(user.name, newEmail, url) });
+        },
+      },
+    },
     session: {
       expiresIn: 60 * 60 * 24 * 7, // 7 days for customers; admin access is shortened in the RBAC guard
       updateAge: 60 * 60 * 24,
@@ -71,6 +80,7 @@ export function createAuth(db: Database) {
         "/request-password-reset": { window: 600, max: 3 },
         "/send-verification-email": { window: 600, max: 3 },
         "/change-password": { window: 60, max: 5 },
+        "/change-email": { window: 600, max: 3 },
       },
     },
     advanced: {

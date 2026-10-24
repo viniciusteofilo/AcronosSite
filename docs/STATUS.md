@@ -1,6 +1,6 @@
 # Status — Phase 07 Deployment (ready, waiting for accounts)
 
-Updated 2026-10-23. Legend: **IMPLEMENTED** (built and covered by automated tests) · **MOCKED** (works with simulated data or services) · **PLANNED** (designed, not built) · **BLOCKED** (waiting on a decision, account or file from ACRONOS).
+Updated 2026-10-24. Legend: **IMPLEMENTED** (built and covered by automated tests) · **MOCKED** (works with simulated data or services) · **PLANNED** (designed, not built) · **BLOCKED** (waiting on a decision, account or file from ACRONOS).
 
 Nothing in this repository is MOCKED. Screens that are not built say so ("Phase 04/05") instead of pretending to work.
 
@@ -29,7 +29,7 @@ Nothing in this repository is MOCKED. Screens that are not built say so ("Phase 
 |---|---|---|
 | Create account, forgot password, reset password | **IMPLEMENTED** | `/signup`, `/login/forgot`, `/login/reset`. Same answer whether or not an address has an account. |
 | E-mail confirmation, order confirmation, shipped, refund, newsletter double opt-in, team notice for contact messages, staff sign-in alert | **IMPLEMENTED** | See `docs/EMAIL.md`. Admin → E-mails lists every message. |
-| My account: profile name, e-mail confirmation status, orders with detail page (progress, tracking, refunds), saved addresses (up to 10), change password | **IMPLEMENTED** | Checkout offers saved addresses and can save a new one. Changing the e-mail address itself is **PLANNED** (ask via contact for now). |
+| My account: profile name, e-mail confirmation status, orders with detail page (progress, tracking, refunds), saved addresses (up to 10), change password | **IMPLEMENTED** | Checkout offers saved addresses and can save a new one. Changing the e-mail: the current address approves, then the new one confirms (IMPLEMENTED). |
 | Bot check (Cloudflare Turnstile) on contact, newsletter, sign-up and password reset | **IMPLEMENTED** (off until keys are set) | Free; keys come from the Cloudflare account. Until then: honeypot + rate limits. |
 | Sci-Fi importer: several stories at once from Word (.docx), Markdown, text or HTML | **IMPLEMENTED** | Each file becomes a draft with "imported from" noted; the author is typed once per import; nothing is published automatically. |
 | Sending through Resend | **BLOCKED** | Needs the free Resend account and DNS records for the domain (authorization). Until then the test site keeps messages in the admin outbox, marked "Not sent". |

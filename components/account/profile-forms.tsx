@@ -165,3 +165,46 @@ export function PasswordForm({
     </form>
   );
 }
+
+export function EmailChangeForm({ change }: { change: (email: string) => Promise<ActionResult<unknown>> }) {
+  const id = useId();
+  const [open, setOpen] = useState(false);
+  const [value, setValue] = useState("");
+  const { msg, pending, run } = useRun();
+  if (!open)
+    return (
+      <div className="flex flex-col gap-2">
+        <button type="button" onClick={() => setOpen(true)} className="self-start font-mono text-[10px] uppercase tracking-[0.14em] underline underline-offset-4">
+          Change e-mail
+        </button>
+        <Message r={msg} />
+      </div>
+    );
+  return (
+    <form
+      noValidate
+      className="flex flex-col gap-2"
+      onSubmit={(e) => {
+        e.preventDefault();
+        run(() => change(value), () => {
+          setOpen(false);
+          setValue("");
+        });
+      }}
+    >
+      <label htmlFor={id} className={labelCls}>
+        New e-mail
+      </label>
+      <div className="flex gap-2">
+        <input id={id} type="email" value={value} onChange={(e) => setValue(e.target.value)} autoComplete="email" maxLength={254} className={input} />
+        <button type="submit" disabled={pending || !value.trim()} className={btn}>
+          Send link
+        </button>
+      </div>
+      <button type="button" onClick={() => setOpen(false)} className="self-start text-xs underline">
+        Cancel
+      </button>
+      <Message r={msg} />
+    </form>
+  );
+}

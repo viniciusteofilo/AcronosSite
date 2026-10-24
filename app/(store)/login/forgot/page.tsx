@@ -10,7 +10,7 @@ export const metadata: Metadata = { title: "Reset password", robots: { index: fa
 
 export default function ForgotPage() {
   return (
-    <main className="mx-auto flex w-full max-w-sm flex-1 flex-col justify-center gap-10 px-4 py-16">
+    <div className="mx-auto flex w-full max-w-sm flex-1 flex-col justify-center gap-10 px-4 py-16">
       <LogoLockup className="w-44 self-center" />
       <h1 className="font-display text-2xl uppercase tracking-[0.08em]">Reset password</h1>
       <Suspense fallback={null}>
@@ -19,7 +19,7 @@ export default function ForgotPage() {
       <Link href="/login" className="font-mono text-xs uppercase tracking-[0.12em] text-muted hover:text-ink">
         ← Back to sign in
       </Link>
-    </main>
+    </div>
   );
 }
 
