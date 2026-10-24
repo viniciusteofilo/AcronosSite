@@ -13,9 +13,15 @@
     "db:generate": "drizzle-kit generate",
     "db:migrate": "tsx db/migrate.ts",
     "admin:create": "tsx scripts/create-super-admin.ts",
-    "test:e2e": "playwright test"
+    "test:e2e": "playwright test",
+    "cf:build": "opennextjs-cloudflare build",
+    "cf:preview": "opennextjs-cloudflare build && opennextjs-cloudflare preview",
+    "cf:deploy": "opennextjs-cloudflare build && opennextjs-cloudflare deploy",
+    "cf:typegen": "wrangler types --env-interface CloudflareEnv cloudflare-env.d.ts",
+    "postinstall": "node scripts/patch-opennext.mjs"
   },
   "dependencies": {
+    "@opennextjs/cloudflare": "1.20.9",
     "better-auth": "^1.7.12",
     "drizzle-orm": "^0.45.4",
     "next": "16.4.2",
@@ -45,7 +51,8 @@
     "tailwindcss": "^4",
     "tsx": "^4.23.15",
     "typescript": "^5",
-    "vitest": "^5.0.5"
+    "vitest": "^5.0.5",
+    "wrangler": "4.148.0"
   },
   "engines": {
     "node": ">=20.9"

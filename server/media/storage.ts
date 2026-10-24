@@ -1,9 +1,10 @@
 import { mkdir, readFile, rm, writeFile } from "node:fs/promises";
 import path from "node:path";
+import { cloudflare, type CloudflareBindings } from "@/lib/cloudflare";
 
 /**
  * Where image files live. Development uses the local disk (./.media, git-ignored).
- * Production uses Cloudflare R2 (Phase 07): only this file changes, callers stay the same.
+ * Production uses a Cloudflare R2 bucket bound to the Worker as MEDIA_BUCKET.
  */
 export interface MediaStorage {
   put(key: string, bytes: Uint8Array, contentType: string): Promise<void>;
@@ -41,16 +42,39 @@ class LocalDiskStorage implements MediaStorage {
   }
 }
 
+/** R2 bucket through the Worker binding (no keys needed, never public by itself). */
+class R2Storage implements MediaStorage {
+  constructor(private readonly bucket: NonNullable<CloudflareBindings["MEDIA_BUCKET"]>) {}
+
+  async put(key: string, bytes: Uint8Array, contentType: string) {
+    if (!MEDIA_KEY_PATTERN.test(key)) throw new Error("Invalid media key");
+    await this.bucket.put(key, bytes, { httpMetadata: { contentType, cacheControl: "public, max-age=31536000, immutable" } });
+  }
+
+  async get(key: string) {
+    if (!MEDIA_KEY_PATTERN.test(key)) return null;
+    const obj = await this.bucket.get(key);
+    if (!obj) return null;
+    return { bytes: new Uint8Array(await obj.arrayBuffer()), contentType: obj.httpMetadata?.contentType ?? "image/webp" };
+  }
+
+  async delete(key: string) {
+    if (MEDIA_KEY_PATTERN.test(key)) await this.bucket.delete(key);
+  }
+}
+
 let storage: MediaStorage | null = null;
 
 export function getMediaStorage(): MediaStorage {
+  const bucket = cloudflare()?.env.MEDIA_BUCKET;
+  if (bucket) return new R2Storage(bucket);
   if (storage) return storage;
   const driver = process.env.MEDIA_DRIVER ?? "local";
   if (driver === "local") {
     storage = new LocalDiskStorage(path.resolve(/*turbopackIgnore: true*/ process.cwd(), process.env.MEDIA_LOCAL_DIR ?? ".media"));
     return storage;
   }
-  throw new Error(`Media driver "${driver}" is not available yet (R2 arrives with deployment).`);
+  throw new Error(`Media driver "${driver}" needs the MEDIA_BUCKET binding (Cloudflare R2).`);
 }
 
 /** Public URL of a stored file. */

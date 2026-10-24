@@ -2,6 +2,7 @@ import "server-only";
 import { headers } from "next/headers";
 import { notFound, redirect } from "next/navigation";
 import { getDb } from "@/db/client";
+import { cloudflare } from "@/lib/cloudflare";
 import {
   decideStaffAccess,
   loadAccessContext,
@@ -11,8 +12,19 @@ import type { Permission } from "@/server/rbac/permissions";
 import { createAuth, type Auth } from "./auth";
 
 const globalForAuth = globalThis as unknown as { acronosAuth?: Auth };
+const authPerRequest = new WeakMap<object, Auth>();
 
+/** One auth instance per process in Node; per request on Cloudflare (it holds a database client). */
 export function getAuth(): Auth {
+  const cf = cloudflare();
+  if (cf?.env.HYPERDRIVE) {
+    let auth = authPerRequest.get(cf.ctx);
+    if (!auth) {
+      auth = createAuth(getDb());
+      authPerRequest.set(cf.ctx, auth);
+    }
+    return auth;
+  }
   if (!globalForAuth.acronosAuth) globalForAuth.acronosAuth = createAuth(getDb());
   return globalForAuth.acronosAuth;
 }

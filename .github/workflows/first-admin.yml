@@ -1,0 +1,28 @@
+name: First super admin
+
+# Run once after the first deploy: gives super admin to an account already created on the site.
+on:
+  workflow_dispatch:
+    inputs:
+      email:
+        description: "E-mail of the account (create it on the site first)"
+        required: true
+
+permissions:
+  contents: read
+
+jobs:
+  grant:
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Grant super admin (refuses if one already exists)
+        env:
+          DATABASE_URL: ${{ secrets.NEON_DATABASE_URL }}
+        run: npx tsx scripts/grant-first-admin.ts "${{ inputs.email }}"

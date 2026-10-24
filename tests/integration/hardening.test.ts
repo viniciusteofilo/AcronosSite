@@ -112,3 +112,19 @@ describe("reports", () => {
     expect(resolvePeriod({ from: "garbage" }).to).toMatch(/^\d{4}-\d{2}-\d{2}$/);
   });
 });
+
+describe("maintenance job", () => {
+  it("removes expired sessions and old carts, keeps live ones", async () => {
+    const { runMaintenance } = await import("@/server/maintenance");
+    const { carts } = await import("@/db/schema");
+    const u = await makeUser(db);
+    const [old] = await db.insert(sessions).values({ userId: u.id, token: crypto.randomUUID(), expiresAt: new Date(Date.now() - 1000) }).returning();
+    const [live] = await db.insert(sessions).values({ userId: u.id, token: crypto.randomUUID(), expiresAt: new Date(Date.now() + 86_400_000) }).returning();
+    const [stale] = await db.insert(carts).values({ currency: "USD", updatedAt: new Date(Date.now() - 90 * 86_400_000) }).returning();
+    const r = await runMaintenance(db);
+    expect(r.sessions).toBeGreaterThanOrEqual(1);
+    expect(await db.select().from(sessions).where(eq(sessions.id, old.id))).toHaveLength(0);
+    expect(await db.select().from(sessions).where(eq(sessions.id, live.id))).toHaveLength(1);
+    expect(await db.select().from(carts).where(eq(carts.id, stale.id))).toHaveLength(0);
+  });
+});
