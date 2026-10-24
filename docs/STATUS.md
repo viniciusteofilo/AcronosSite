@@ -31,6 +31,7 @@ Nothing in this repository is MOCKED. Screens that are not built say so ("Phase 
 | E-mail confirmation, order confirmation, shipped, refund, newsletter double opt-in, team notice for contact messages, staff sign-in alert | **IMPLEMENTED** | See `docs/EMAIL.md`. Admin → E-mails lists every message. |
 | My account: profile name, e-mail confirmation status, orders with detail page (progress, tracking, refunds), saved addresses (up to 10), change password | **IMPLEMENTED** | Checkout offers saved addresses and can save a new one. Changing the e-mail address itself is **PLANNED** (ask via contact for now). |
 | Bot check (Cloudflare Turnstile) on contact, newsletter, sign-up and password reset | **IMPLEMENTED** (off until keys are set) | Free; keys come from the Cloudflare account. Until then: honeypot + rate limits. |
+| Sci-Fi importer: several stories at once from Word (.docx), Markdown, text or HTML | **IMPLEMENTED** | Each file becomes a draft with "imported from" noted; the author is typed once per import; nothing is published automatically. |
 | Sending through Resend | **BLOCKED** | Needs the free Resend account and DNS records for the domain (authorization). Until then the test site keeps messages in the admin outbox, marked "Not sent". |
 
 ## Phase 07 — Deployment (prepared; BLOCKED on ACRONOS accounts)

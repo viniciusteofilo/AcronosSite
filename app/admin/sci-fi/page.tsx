@@ -15,12 +15,20 @@ export default function SciFiAdmin() {
         title="Acronos Sci-Fi"
         description="Stories in the Sci-Fi library. Paste from Word or Google Docs: only basic formatting is kept."
         actions={
-          <Link
-            href="/admin/sci-fi/new"
-            className="inline-flex h-10 items-center bg-ink px-5 font-mono text-[10px] uppercase tracking-[0.14em] text-canvas hover:bg-muted"
-          >
-            New story
-          </Link>
+          <div className="flex gap-2">
+            <Link
+              href="/admin/sci-fi/import"
+              className="inline-flex h-10 items-center border border-field px-4 font-mono text-[10px] uppercase tracking-[0.14em] hover:border-ink"
+            >
+              Import files
+            </Link>
+            <Link
+              href="/admin/sci-fi/new"
+              className="inline-flex h-10 items-center bg-ink px-5 font-mono text-[10px] uppercase tracking-[0.14em] text-canvas hover:bg-muted"
+            >
+              New story
+            </Link>
+          </div>
         }
       />
       <Suspense fallback={<p className="text-muted">Loading…</p>}>

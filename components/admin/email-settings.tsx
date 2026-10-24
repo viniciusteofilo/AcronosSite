@@ -21,6 +21,7 @@ export function EmailSettings({ notifyEmail, save, test }: { notifyEmail: string
   return (
     <div className="flex flex-col gap-4">
       <form
+        noValidate
         className="flex flex-wrap items-end gap-3"
         onSubmit={(e) => {
           e.preventDefault();

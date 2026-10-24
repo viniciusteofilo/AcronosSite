@@ -5,12 +5,14 @@ import { getDb } from "@/db/client";
 import { EMAIL_KINDS } from "@/db/schema";
 import { EmailSettings } from "@/components/admin/email-settings";
 import { AdminPageHeader } from "@/components/admin/page-header";
-import { Panel, dateTime } from "@/components/admin/ui";
+import { Panel } from "@/components/admin/ui";
 import { requireStaff } from "@/server/auth";
 import { EMAIL_KIND_LABELS, listEmails } from "@/server/email/admin";
 import { emailMode } from "@/server/email/send";
 import { getStoreSettings } from "@/server/store/settings";
 import { saveNotifyEmailAction, sendTestEmailAction } from "./actions";
+
+const dateTime = new Intl.DateTimeFormat("en-US", { dateStyle: "medium", timeStyle: "short", timeZone: "UTC" });
 
 export const metadata: Metadata = { title: "E-mails" };
 
@@ -76,7 +78,7 @@ async function Body({ searchParams }: Pick<PageProps<"/admin/emails">, "searchPa
           <table className="w-full min-w-[720px] text-left text-sm">
             <thead className="font-mono text-[10px] uppercase tracking-[0.14em] text-muted">
               <tr className="border-b border-line">
-                <th className="p-3 font-normal">When</th>
+                <th className="p-3 font-normal">When (UTC)</th>
                 <th className="p-3 font-normal">Type</th>
                 <th className="p-3 font-normal">To</th>
                 <th className="p-3 font-normal">Subject</th>
