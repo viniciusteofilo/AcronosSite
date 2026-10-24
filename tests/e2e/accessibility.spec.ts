@@ -20,7 +20,7 @@ test.beforeEach(async () => {
   await sql.end();
 });
 
-for (const path of ["/", "/shop", "/collections", "/sci-fi", "/lab", "/about", "/contact", "/cart", "/policies/privacy", "/login"]) {
+for (const path of ["/", "/shop", "/collections", "/sci-fi", "/lab", "/about", "/contact", "/cart", "/policies/privacy", "/login", "/signup", "/login/forgot"]) {
   test(`no WCAG violations on ${path}`, async ({ page }) => {
     await page.goto(path);
     await page.waitForLoadState("networkidle");
@@ -54,7 +54,7 @@ test("no WCAG violations on the main admin screens", async ({ page, baseURL, isM
   await sql`INSERT INTO user_roles (user_id, role) SELECT id, 'super_admin' FROM users WHERE email = ${email}`;
   await sql.end();
   const problems: string[] = [];
-  for (const path of ["/admin", "/admin/products", "/admin/products/new", "/admin/inventory", "/admin/site", "/admin/sci-fi/new", "/admin/pages/about", "/admin/orders", "/admin/settings", "/admin/reports", "/admin/users"]) {
+  for (const path of ["/admin", "/admin/products", "/admin/products/new", "/admin/inventory", "/admin/site", "/admin/sci-fi/new", "/admin/pages/about", "/admin/orders", "/admin/settings", "/admin/reports", "/admin/users", "/admin/emails", "/account", "/account/addresses", "/account/security"]) {
     await page.goto(path);
     await page.waitForLoadState("networkidle");
     for (const v of await scan(page)) problems.push(`${path}: ${v}`);

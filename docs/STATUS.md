@@ -29,6 +29,7 @@ Nothing in this repository is MOCKED. Screens that are not built say so ("Phase 
 |---|---|---|
 | Create account, forgot password, reset password | **IMPLEMENTED** | `/signup`, `/login/forgot`, `/login/reset`. Same answer whether or not an address has an account. |
 | E-mail confirmation, order confirmation, shipped, refund, newsletter double opt-in, team notice for contact messages, staff sign-in alert | **IMPLEMENTED** | See `docs/EMAIL.md`. Admin → E-mails lists every message. |
+| My account: profile name, e-mail confirmation status, orders with detail page (progress, tracking, refunds), saved addresses (up to 10), change password | **IMPLEMENTED** | Checkout offers saved addresses and can save a new one. Changing the e-mail address itself is **PLANNED** (ask via contact for now). |
 | Sending through Resend | **BLOCKED** | Needs the free Resend account and DNS records for the domain (authorization). Until then the test site keeps messages in the admin outbox, marked "Not sent". |
 
 ## Phase 07 — Deployment (prepared; BLOCKED on ACRONOS accounts)

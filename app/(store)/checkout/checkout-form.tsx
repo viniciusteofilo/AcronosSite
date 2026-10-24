@@ -5,6 +5,7 @@ import { useActionState, useMemo, useState, type ReactNode } from "react";
 import { Button } from "@/components/ui/button";
 import { Field } from "@/components/ui/field";
 import { formatMoney } from "@/lib/money";
+import type { SavedAddress } from "@/server/account/profile";
 import type { CartResult } from "../cart/actions";
 
 type Method = { id: string; name: string; carrier: string | null; currency: string; priceMinor: number; freeOverMinor: number | null; dutiesModel: string };
@@ -25,7 +26,12 @@ export function CheckoutForm({
   lines,
   backToCart,
   idempotencyKey,
+  signedIn = false,
+  saved = [],
 }: {
+  signedIn?: boolean;
+  /** The signed-in person's saved addresses; the first one fills the form. */
+  saved?: SavedAddress[];
   /** One key per visit to this page, so a double click or retry never creates two orders. */
   idempotencyKey: string;
   action: (prev: CartResult, form: FormData) => Promise<CartResult>;
@@ -37,8 +43,10 @@ export function CheckoutForm({
 }) {
   const [state, formAction, pending] = useActionState(action, null);
   const countries = useMemo(() => Object.keys(options).sort((a, b) => countryName(a).localeCompare(countryName(b))), [options]);
-  const v = state?.values ?? {};
-  const [country, setCountry] = useState(v.country || (countries.includes("US") ? "US" : (countries[0] ?? "")));
+  const [picked, setPicked] = useState(saved[0]?.id ?? "");
+  const pickedAddress = saved.find((a) => a.id === picked);
+  const v: Record<string, string> = state?.values ?? (pickedAddress ? { ...pickedAddress } : {});
+  const [country, setCountry] = useState(v.country && options[v.country] ? v.country : countries.includes("US") ? "US" : (countries[0] ?? ""));
   const methods = options[country] ?? [];
   const [methodId, setMethodId] = useState(v.methodId || methods[0]?.id || "");
   const method = methods.find((m) => m.id === methodId) ?? methods[0];
@@ -61,6 +69,33 @@ export function CheckoutForm({
 
         <fieldset className="flex flex-col gap-5">
           <legend className="mb-5 font-display text-sm uppercase tracking-[0.1em]">2. Shipping address</legend>
+          {saved.length > 0 && !state && (
+            <div className="flex flex-col gap-2">
+              <label htmlFor="co-saved" className="font-mono text-[10px] uppercase tracking-[0.18em] text-muted">
+                Saved addresses
+              </label>
+              <select
+                id="co-saved"
+                value={picked}
+                onChange={(e) => {
+                  setPicked(e.target.value);
+                  const a = saved.find((x) => x.id === e.target.value);
+                  if (a && options[a.country]) {
+                    setCountry(a.country);
+                    setMethodId(options[a.country]?.[0]?.id ?? "");
+                  }
+                }}
+                className="h-12 rounded-sm border border-line bg-surface px-4"
+              >
+                {saved.map((a) => (
+                  <option key={a.id} value={a.id}>
+                    {a.fullName} · {a.line1}, {a.city} ({a.country})
+                  </option>
+                ))}
+                <option value="">New address</option>
+              </select>
+            </div>
+          )}
           <div className="flex flex-col gap-2">
             <label htmlFor="co-country" className="font-mono text-[10px] uppercase tracking-[0.18em] text-muted">
               Country
@@ -93,6 +128,12 @@ export function CheckoutForm({
             <Field key={`p${k}`} id="co-postal" name="postalCode" label="Postal code" autoComplete="postal-code" required defaultValue={v.postalCode} error={err("postalCode")} />
           </div>
           <Field key={`t${k}`} id="co-phone" name="phone" type="tel" label="Phone (for the carrier, optional)" autoComplete="tel" defaultValue={v.phone} />
+          {signedIn && (
+            <label className="flex items-center gap-3 text-sm">
+              <input type="checkbox" name="saveAddress" defaultChecked={!pickedAddress} className="size-4" />
+              Save this address to my account
+            </label>
+          )}
         </fieldset>
 
         <fieldset className="flex flex-col gap-3">

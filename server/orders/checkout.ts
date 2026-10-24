@@ -1,3 +1,4 @@
+import { loadOrderView } from "@/server/customers/orders";
 import { notifyOrderPaid } from "@/server/email/notify";
 import { randomBytes } from "node:crypto";
 import { and, eq, inArray, isNull, lt, sql } from "drizzle-orm";
@@ -296,6 +297,12 @@ export async function getOrderForBuyer(db: Database, orderId: string, token: str
   if (!o) return null;
   const items = await db.select().from(orderItems).where(eq(orderItems.orderId, o.id));
   return { ...o, items };
+}
+
+/** Same check as getOrderForBuyer, returning what the status page shows (with tracking). */
+export async function getOrderViewForBuyer(db: Database, orderId: string, token: string) {
+  const o = await getOrderForBuyer(db, orderId, token);
+  return o ? loadOrderView(db, o) : null;
 }
 
 /** Items of a canceled checkout, to put back in the cart. */

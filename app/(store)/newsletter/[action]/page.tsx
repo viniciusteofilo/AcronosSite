@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import { connection } from "next/server";
+import { Suspense } from "react";
 import { Container, PageHeader } from "@/components/storefront/page-parts";
 import { readNewsletterToken } from "@/server/email/notify";
 import { newsletterLinkAction } from "./actions";
@@ -16,7 +18,18 @@ const COPY = {
  * The link only opens this page; the change happens when the person presses the button.
  * E-mail security scanners open links automatically and must not confirm or cancel anything.
  */
-export default async function NewsletterLinkPage({ params, searchParams }: PageProps<"/newsletter/[action]">) {
+export default function NewsletterLinkPage(props: PageProps<"/newsletter/[action]">) {
+  return (
+    <Container className="pb-24">
+      <Suspense fallback={<div className="min-h-[40svh]" />}>
+        <Body {...props} />
+      </Suspense>
+    </Container>
+  );
+}
+
+async function Body({ params, searchParams }: PageProps<"/newsletter/[action]">) {
+  await connection(); // the link's expiry is checked against the current time
   const { action } = await params;
   if (action !== "confirm" && action !== "unsubscribe") notFound();
   const t = (await searchParams).t;
@@ -24,7 +37,7 @@ export default async function NewsletterLinkPage({ params, searchParams }: PageP
   const email = token ? readNewsletterToken(token, action) : null;
   const copy = COPY[action];
   return (
-    <Container className="pb-24">
+    <>
       <PageHeader eyebrow="Newsletter //" title={copy.title} intro={email ? copy.intro : "This link is not valid or has expired. Sign up again from the footer of any page."} />
       {email && (
         <div className="py-10">
@@ -32,6 +45,6 @@ export default async function NewsletterLinkPage({ params, searchParams }: PageP
           <NewsletterLinkForm action={newsletterLinkAction} token={token} purpose={action} label={copy.button} />
         </div>
       )}
-    </Container>
+    </>
   );
 }
