@@ -1,4 +1,4 @@
-# Status — Phase 01 Foundation
+# Status — Phase 02 Design system
 
 Updated 2026-10-20. Legend: **IMPLEMENTED** (built and covered by automated tests) · **MOCKED** (works with simulated data or services) · **PLANNED** (designed, not built) · **BLOCKED** (waiting on a decision, account or file from ACRONOS).
 
@@ -23,11 +23,23 @@ Nothing in this repository is MOCKED. Screens that are not built say so ("Phase 
 | CI | GitHub Actions: lint, typecheck, unit + integration on PostgreSQL 16, build, e2e (desktop + mobile), `npm audit`; Dependabot weekly | `.github/` |
 | Design tokens | Colors and fonts from the design system; fonts self-hosted; focus ring; reduced motion | `app/globals.css` |
 
+## Phase 02 — Design system (awaiting approval)
+
+Direction change on 2026-10-20: light theme (light gray canvas, near-black ink), requested by ACRONOS. Official logo added as a vector trace of the supplied artwork (® omitted until registration is confirmed).
+
+| Area | What exists | Proof |
+| --- | --- | --- |
+| Components | Icons, brand graphic elements, buttons (5 variants), fields with hint/error, checkbox, size/color pickers (native radios, sold-out announced), quantity stepper, badges, product card, media placeholder | `/design-preview` style guide |
+| Storefront chrome | Header (desktop nav with current page; mobile drawer on native `<dialog>`: focus trap, Escape, inert background), footer with newsletter form (UI only) | `tests/e2e/design-preview.spec.ts` |
+| Approval screens | Home, Shop with filters, Product, Collections, Sci-Fi reading page — desktop and mobile, no horizontal scroll | screenshots in the review page |
+| Gating | `/design-preview` is never indexed and is excluded from builds unless `DESIGN_PREVIEW=1` at build time | `app/design-preview/layout.tsx` |
+
+**MOCKED (labeled on screen):** every image is a placeholder slot with its recommended size; products are "SAMPLE // …" at $000.00; collection names and statements are placeholders; the manifesto is draft copy. Newsletter, search, cart and filters do not submit yet (Phase 03/05).
+
 ## Planned (next phases)
 
 | Phase | Items |
 | --- | --- |
-| 02 Design system | Component library, header/menu, high-fidelity screens for approval |
 | 03 Storefront | Home, Shop with filters and search, product, collections, About, Lab, Sci-Fi |
 | 04 Admin | Products/variants/prices/images, inventory adjustments, collections, customers, CMS with drafts/preview/revisions, Sci-Fi editor and importer, Lab, marketing, reports, settings, user management screen |
 | 05 E-commerce | Cart, checkout, server-side pricing, stock reservation with expiry, Stripe Checkout (with Adaptive Pricing) and PayPal, signed webhooks, refunds, reconciliation, transactional e-mail, import-duty line (DDP) |
@@ -36,7 +48,7 @@ Nothing in this repository is MOCKED. Screens that are not built say so ("Phase 
 
 ## Blocked (needs ACRONOS)
 
-- Official logo files (SVG/PDF). A text wordmark is used until then.
+- Original vector logo files (SVG/PDF). A faithful vector trace of the supplied PNG is in use until then.
 - Stripe Brasil and PayPal Brasil business accounts (CNPJ), verified.
 - Domain without .br, to configure as the official URL.
 - DDP vs DDU, carrier and HS codes for exports (accountant / customs broker).

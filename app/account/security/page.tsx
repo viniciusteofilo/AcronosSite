@@ -9,7 +9,7 @@ export default function SecurityPage({ searchParams }: PageProps<"/account/secur
   return (
     <main className="mx-auto flex w-full max-w-lg flex-1 flex-col gap-8 px-4 py-16">
       <h1 className="font-display text-2xl uppercase tracking-[0.08em]">Security</h1>
-      <Suspense fallback={<p className="text-steel">Loading…</p>}>
+      <Suspense fallback={<p className="text-muted">Loading…</p>}>
         <Content searchParams={searchParams} />
       </Suspense>
     </main>

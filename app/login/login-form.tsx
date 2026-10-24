@@ -84,7 +84,7 @@ export function LoginForm({ next }: { next: string }) {
   return (
     // `key` forces a fresh form: React must never carry the typed password into the code field.
     <form key={step} onSubmit={onSecondFactor} className="flex flex-col gap-5" noValidate>
-      <p className="text-sm text-steel">
+      <p className="text-sm text-muted">
         {step === "totp"
           ? "Enter the 6-digit code from your authenticator app."
           : "Enter one of your backup codes."}
@@ -108,7 +108,7 @@ export function LoginForm({ next }: { next: string }) {
       </Button>
       <button
         type="button"
-        className="font-mono text-xs uppercase tracking-[0.12em] text-steel hover:text-snow"
+        className="font-mono text-xs uppercase tracking-[0.12em] text-muted hover:text-ink"
         onClick={() => setStep(step === "totp" ? "backup" : "totp")}
       >
         {step === "totp" ? "Use a backup code instead" : "Use authenticator app"}

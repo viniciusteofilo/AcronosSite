@@ -8,7 +8,9 @@ import { NextResponse, type NextRequest } from "next/server";
  */
 export function proxy(request: NextRequest) {
   if (!getSessionCookie(request)) {
-    const url = new URL("/login", request.url);
+    const url = request.nextUrl.clone(); // keeps the incoming protocol and host
+    url.pathname = "/login";
+    url.search = "";
     url.searchParams.set("next", request.nextUrl.pathname);
     return NextResponse.redirect(url);
   }
