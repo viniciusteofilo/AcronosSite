@@ -33,9 +33,12 @@ test("public pages load without horizontal scroll", async ({ page }) => {
 
 test("search opens from the header and goes to the shop", async ({ page }) => {
   await page.goto("/");
-  await page.getByRole("button", { name: "Search" }).click();
   const box = page.getByRole("searchbox", { name: "Search products" });
-  await expect(box).toBeFocused();
+  // a click that lands before hydration does nothing; retry until the dialog opens
+  await expect(async () => {
+    await page.getByRole("button", { name: "Search" }).click();
+    await expect(box).toBeFocused({ timeout: 1000 });
+  }).toPass();
   await box.fill("jacket");
   await box.press("Enter");
   await expect(page).toHaveURL(/\/shop\?q=jacket/);

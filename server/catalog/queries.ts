@@ -111,7 +111,14 @@ export async function listProducts(
       ? [asc(price), asc(products.name)]
       : filters.sort === "price_desc"
         ? [desc(price), asc(products.name)]
-        : [desc(sql`coalesce(${products.publishedAt}, ${products.createdAt})`), asc(products.name)];
+        : filters.collection
+          ? // inside a collection, "newest" keeps the order chosen in the collection editor
+            [
+              asc(sql`(SELECT pc.sort_order FROM ${productCollections} pc JOIN ${collections} c ON c.id = pc.collection_id
+                WHERE pc.product_id = "products"."id" AND c.slug = ${filters.collection} LIMIT 1)`),
+              desc(sql`coalesce(${products.publishedAt}, ${products.createdAt})`),
+            ]
+          : [desc(sql`coalesce(${products.publishedAt}, ${products.createdAt})`), asc(products.name)];
 
   const rows = await db
     .select({
