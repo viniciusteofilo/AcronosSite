@@ -4,6 +4,8 @@ import { nextCookies } from "better-auth/next-js";
 import { twoFactor } from "better-auth/plugins";
 import type { Database } from "@/db/client";
 import * as schema from "@/db/schema";
+import { siteUrl } from "@/lib/site-url";
+import { bootstrapTestAdmin } from "./bootstrap";
 
 /**
  * Authentication is delegated to Better Auth (maintained library): password hashing,
@@ -13,7 +15,7 @@ export function createAuth(db: Database) {
   return betterAuth({
     appName: "ACRONOS",
     secret: process.env.BETTER_AUTH_SECRET,
-    baseURL: process.env.BETTER_AUTH_URL,
+    baseURL: process.env.BETTER_AUTH_URL || siteUrl(),
     database: drizzleAdapter(db, {
       provider: "pg",
       schema: {
@@ -50,6 +52,9 @@ export function createAuth(db: Database) {
       useSecureCookies: process.env.NODE_ENV === "production",
       database: { generateId: "uuid" },
       ipAddress: { ipAddressHeaders: ["cf-connecting-ip", "x-forwarded-for"] },
+    },
+    databaseHooks: {
+      user: { create: { after: async (user) => bootstrapTestAdmin(db, user) } },
     },
     plugins: [twoFactor({ issuer: "ACRONOS" }), nextCookies()],
   });

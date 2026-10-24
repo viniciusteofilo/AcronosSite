@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
-import { siteUrl } from "@/lib/site-url";
+import { isTestEnvironment, siteUrl } from "@/lib/site-url";
 
 // Self-hosted (SIL Open Font License): no runtime request to third-party font servers.
 const inter = localFont({
@@ -43,7 +43,14 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       lang="en"
       className={`${inter.variable} ${spaceMono.variable} ${orbitron.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col">
+        {isTestEnvironment() && (
+          <p className="bg-alert px-4 py-1.5 text-center font-mono text-[10px] uppercase tracking-[0.18em] text-paper">
+            Test environment · not a real store · no real payments
+          </p>
+        )}
+        {children}
+      </body>
     </html>
   );
 }

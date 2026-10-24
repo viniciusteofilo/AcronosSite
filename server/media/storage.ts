@@ -63,12 +63,39 @@ class R2Storage implements MediaStorage {
   }
 }
 
+/** Vercel Blob (test environment on Vercel). Private store: files are only served through /media. */
+class VercelBlobStorage implements MediaStorage {
+  async put(key: string, bytes: Uint8Array, contentType: string) {
+    if (!MEDIA_KEY_PATTERN.test(key)) throw new Error("Invalid media key");
+    const { put } = await import("@vercel/blob");
+    await put(key, Buffer.from(bytes), { access: "private", contentType, addRandomSuffix: false, cacheControlMaxAge: 31_536_000 });
+  }
+
+  async get(key: string) {
+    if (!MEDIA_KEY_PATTERN.test(key)) return null;
+    const { get } = await import("@vercel/blob");
+    const r = await get(key, { access: "private" });
+    if (!r?.stream) return null;
+    return { bytes: new Uint8Array(await new Response(r.stream).arrayBuffer()), contentType: r.blob.contentType ?? "image/webp" };
+  }
+
+  async delete(key: string) {
+    if (!MEDIA_KEY_PATTERN.test(key)) return;
+    const { del } = await import("@vercel/blob");
+    await del(key);
+  }
+}
+
 let storage: MediaStorage | null = null;
 
 export function getMediaStorage(): MediaStorage {
   const bucket = cloudflare()?.env.MEDIA_BUCKET;
   if (bucket) return new R2Storage(bucket);
   if (storage) return storage;
+  if (process.env.BLOB_READ_WRITE_TOKEN) {
+    storage = new VercelBlobStorage();
+    return storage;
+  }
   const driver = process.env.MEDIA_DRIVER ?? "local";
   if (driver === "local") {
     storage = new LocalDiskStorage(path.resolve(/*turbopackIgnore: true*/ process.cwd(), process.env.MEDIA_LOCAL_DIR ?? ".media"));

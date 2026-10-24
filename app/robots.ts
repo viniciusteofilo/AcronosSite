@@ -1,8 +1,9 @@
 import type { MetadataRoute } from "next";
-import { siteUrl } from "@/lib/site-url";
+import { isTestEnvironment, siteUrl } from "@/lib/site-url";
 
 export default function robots(): MetadataRoute.Robots {
   const base = siteUrl();
+  if (isTestEnvironment()) return { rules: [{ userAgent: "*", disallow: "/" }] };
   return {
     rules: [
       {

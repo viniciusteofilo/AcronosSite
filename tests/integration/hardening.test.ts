@@ -128,3 +128,26 @@ describe("maintenance job", () => {
     expect(await db.select().from(carts).where(eq(carts.id, stale.id))).toHaveLength(0);
   });
 });
+
+describe("test environment bootstrap", () => {
+  it("only in APP_ENV=test, only for the configured e-mail, only while no super admin exists", async () => {
+    const { bootstrapTestAdmin } = await import("@/server/auth/bootstrap");
+    const { userRoles } = await import("@/db/schema");
+    const roles = async (id: string) => (await db.select().from(userRoles).where(eq(userRoles.userId, id))).map((r) => r.role);
+    const u = await makeUser(db);
+    process.env.BOOTSTRAP_ADMIN_EMAIL = u.email.toUpperCase();
+    delete process.env.APP_ENV;
+    await bootstrapTestAdmin(db, u);
+    expect(await roles(u.id)).toEqual([]); // not a test environment: nothing happens
+    process.env.APP_ENV = "test";
+    const other = await makeUser(db);
+    await bootstrapTestAdmin(db, other);
+    expect(await roles(other.id)).toEqual([]); // different e-mail
+    // other test files may already have created super admins in this database
+    const existing = await db.select().from(userRoles).where(eq(userRoles.role, "super_admin"));
+    await bootstrapTestAdmin(db, u);
+    expect(await roles(u.id)).toEqual(existing.length ? [] : ["super_admin"]);
+    delete process.env.APP_ENV;
+    delete process.env.BOOTSTRAP_ADMIN_EMAIL;
+  });
+});
