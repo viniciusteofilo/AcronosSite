@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useMemo, useState, useTransition } from "react";
+import { useId, useMemo, useState, useTransition } from "react";
 import { codeOf, minorToInput, parseMoneyInput, slugify } from "@/lib/slug";
 import { formatMoney } from "@/lib/money";
 import type { ActionResult } from "@/server/admin/errors";
@@ -160,6 +160,8 @@ export function ProductEditor({
   created?: boolean;
 }) {
   const router = useRouter();
+  // unique per instance: Next keeps hidden copies of visited pages, and radios sharing a name would interfere
+  const radioName = useId();
   const [product, setProduct] = useState(initialProduct);
   const [form, setForm] = useState<Form>(() => toForm(initialProduct));
   const [images, setImages] = useState<MediaView[]>(initialProduct?.images ?? []);
@@ -656,7 +658,7 @@ export function ProductEditor({
               <legend className="sr-only">Status</legend>
               {(Object.keys(STATUS_TEXT) as Status[]).map((s) => (
                 <label key={s} className={`flex cursor-pointer gap-3 border p-3 text-sm ${form.status === s ? "border-ink bg-paper" : "border-line"}`}>
-                  <input type="radio" name="status" value={s} checked={form.status === s} onChange={() => set("status", s)} className="mt-1" />
+                  <input type="radio" name={radioName} value={s} checked={form.status === s} onChange={() => set("status", s)} className="mt-1" />
                   <span className="flex flex-col">
                     <span>{STATUS_TEXT[s].label}</span>
                     <span className="text-xs text-muted">{STATUS_TEXT[s].help}</span>

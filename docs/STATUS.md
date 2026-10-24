@@ -1,4 +1,4 @@
-# Status — Phase 04 (part 1) Catalog admin
+# Status — Phase 04 Admin (catalog, content, people)
 
 Updated 2026-10-21. Legend: **IMPLEMENTED** (built and covered by automated tests) · **MOCKED** (works with simulated data or services) · **PLANNED** (designed, not built) · **BLOCKED** (waiting on a decision, account or file from ACRONOS).
 
@@ -22,6 +22,19 @@ Nothing in this repository is MOCKED. Screens that are not built say so ("Phase 
 | Security headers | CSP, HSTS, nosniff, frame-ancestors none / X-Frame-Options DENY, Referrer-Policy, Permissions-Policy | `curl -I` |
 | CI | GitHub Actions: lint, typecheck, unit + integration on PostgreSQL 16, build, e2e (desktop + mobile), `npm audit`; Dependabot weekly | `.github/` |
 | Design tokens | Colors and fonts from the design system; fonts self-hosted; focus ring; reduced motion | `app/globals.css` |
+
+## Phase 04 (part 2) — Content and people
+
+| Area | What exists | Proof |
+| --- | --- | --- |
+| Pages (`/admin/pages`) | About, Lab intro, Shipping, Returns, Privacy, Terms: title, intro, sections (add, reorder, remove), draft or publish, SEO, history with "load old version" | `tests/integration/content-admin.test.ts` |
+| Policies | Publishing a policy requires confirming the text was reviewed by ACRONOS/lawyer; until published the site says it is being finalized | integration + e2e |
+| Acronos Sci-Fi (`/admin/sci-fi`) | Story list, editor with formatting toolbar (headings, bold, italic, quote, lists, links, scene break), paste from Word/Google Docs keeps only that formatting, word count and reading time, cover, categories, draft / scheduled / published / archived, "imported from" provenance, SEO, history, delete; sanitized again on the server | integration + e2e |
+| Acronos Lab (`/admin/lab`) | Projects (with an explicit stage: planned by default) and updates (optionally scheduled) | integration tests |
+| Customers (`/admin/customers`) | Search, orders count, amount paid, newsletter status; detail with orders, addresses (only for roles allowed to see shipping data), messages; each view is audited | integration tests |
+| Messages (`/admin/messages`) | Contact-form inbox: new / open / closed, reply by e-mail link | integration tests |
+| Newsletter (`/admin/marketing`) | Subscribers with consent time and source, unsubscribe, CSV export (audited, protected against spreadsheet formula injection) | integration tests |
+| Users (`/admin/users`, super admin) | Add a role to an existing account by e-mail, remove roles, two-factor status per person; the last super admin and your own super admin role are protected | integration tests |
 
 ## Phase 04 (part 1) — Catalog admin
 
@@ -49,7 +62,7 @@ Nothing in this repository is MOCKED. Screens that are not built say so ("Phase 
 
 **Empty states (by design):** with no published products, collections or stories, each page says what will appear there. Policies say they are being finalized; no legal text is invented.
 
-**Still PLANNED:** Sci-Fi, Lab, pages and policies editors, customers, users and settings screens (Phase 04 part 2); cart and checkout (Phase 05); confirmation e-mails (needs an e-mail provider); R2 image storage (Phase 07).
+**Still PLANNED:** orders, reports and store settings (Phase 05, with checkout); cart and checkout (Phase 05); confirmation e-mails (needs an e-mail provider); R2 image storage (Phase 07).
 
 ## Phase 02 — Design system (approved 2026-10-20)
 
