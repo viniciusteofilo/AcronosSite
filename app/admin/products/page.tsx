@@ -125,7 +125,7 @@ async function ProductList({ searchParams }: Pick<PageProps<"/admin/products">, 
                       <span className="block text-xs text-muted">{[p.category, p.missingPrice && p.variants > 0 ? "missing USD price" : null, p.variants === 0 ? "no variants" : null].filter(Boolean).join(" · ")}</span>
                     </td>
                     <td className="py-2 pr-3">
-                      <span className={`inline-flex h-6 items-center border px-2 font-mono text-[10px] uppercase tracking-[0.14em] ${p.status === "published" ? "border-signal/60 text-signal" : "border-line text-muted"}`}>
+                      <span className={`inline-flex h-6 items-center border px-2 font-mono text-[10px] uppercase tracking-[0.14em] ${p.status === "published" ? "border-signal/60 text-signal-ink" : "border-line text-muted"}`}>
                         {scheduled ? "Scheduled" : p.status}
                       </span>
                     </td>

@@ -19,7 +19,7 @@ export async function generateMetadata({ params }: PageProps<"/products/[slug]">
   await connection();
   const p = await getProductBySlug(getDb(), slug);
   if (!p) return { title: "Product not found", robots: { index: false } };
-  const description = p.seoDescription ?? p.description?.slice(0, 160) ?? undefined;
+  const description = p.seoDescription ?? p.description?.slice(0, 160) ?? `${p.name} by ACRONOS, futurist fashion from São Paulo.`;
   return {
     title: p.seoTitle ?? p.name,
     description,

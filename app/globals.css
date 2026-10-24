@@ -3,7 +3,8 @@
 /*
  * ACRONOS design tokens — light theme (approved direction, 2026-10-20).
  * Light gray canvas, near-black ink, product first, accents used sparingly.
- * Contrast (WCAG 2.2): ink 16:1, muted 5.9:1, alert 4.9:1 on canvas; signal 3.7:1 (focus/UI only).
+ * Contrast (WCAG 2.2): ink 16:1, muted 5.9:1, alert 4.9:1 on canvas; signal 3.7:1 (focus/UI only);
+ * signal-ink 5.1:1 for cyan text.
  */
 @theme {
   --color-canvas: #ecece9;   /* page background, light gray */
@@ -14,6 +15,7 @@
   --color-muted: #5a5a57;    /* secondary text, icons */
   --color-ink: #111111;      /* main text, primary buttons */
   --color-signal: #00849e;   /* focus ring, active state */
+  --color-signal-ink: #006d82; /* cyan used as text (AA on every surface) */
   --color-alert: #c4231b;    /* errors, sold out, destructive */
 
   --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;

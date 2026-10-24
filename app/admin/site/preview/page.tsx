@@ -24,7 +24,7 @@ async function Preview() {
   const products = await getFeaturedProducts(db, state.draft);
   return (
     <div className="-m-4 bg-canvas md:-m-8">
-      <p role="status" className="sticky top-0 z-30 border-b border-signal bg-paper px-4 py-2 text-center font-mono text-[10px] uppercase tracking-[0.18em] text-signal">
+      <p role="status" className="sticky top-0 z-30 border-b border-signal bg-paper px-4 py-2 text-center font-mono text-[10px] uppercase tracking-[0.18em] text-signal-ink">
         Preview of your draft · not visible to visitors
       </p>
       <HomeView blocks={state.draft} media={state.media} products={products} />

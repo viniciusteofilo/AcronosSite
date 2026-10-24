@@ -682,7 +682,7 @@ export function ProductEditor({
             <ul className="flex flex-col gap-2 text-sm">
               {checklist.map((c) => (
                 <li key={c.text} className="flex items-center gap-2">
-                  <span aria-hidden className={`font-mono text-xs ${c.ok ? "text-signal" : "text-alert"}`}>
+                  <span aria-hidden className={`font-mono text-xs ${c.ok ? "text-signal-ink" : "text-alert"}`}>
                     {c.ok ? "✓" : "○"}
                   </span>
                   <span className={c.ok ? "" : "text-muted"}>

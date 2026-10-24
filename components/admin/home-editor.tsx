@@ -72,7 +72,7 @@ export function HomeEditor({
 
   const status = useMemo(() => {
     if (dirty) return { text: "Unsaved changes", tone: "text-alert" };
-    if (scheduledAt) return { text: `Scheduled for ${dt.format(new Date(scheduledAt))}`, tone: "text-signal" };
+    if (scheduledAt) return { text: `Scheduled for ${dt.format(new Date(scheduledAt))}`, tone: "text-signal-ink" };
     if (hasDraft) return { text: "Draft saved, not published", tone: "text-ink" };
     return { text: "Everything is live", tone: "text-muted" };
   }, [dirty, scheduledAt, hasDraft]);

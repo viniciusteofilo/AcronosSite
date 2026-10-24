@@ -3,7 +3,7 @@
 import { getDb } from "@/db/client";
 import { getAccessContext } from "@/server/auth";
 import { runAdmin } from "@/server/admin/errors";
-import { grantRoleByEmail, revokeStaffRole, setMessageStatus, unsubscribe } from "@/server/admin/people";
+import { grantRoleByEmail, resetTwoFactor, revokeStaffRole, setMessageStatus, unsubscribe } from "@/server/admin/people";
 import { getPageRevision, savePage } from "@/server/content/pages-admin";
 import {
   createStoryCategory,
@@ -73,4 +73,18 @@ export async function grantRoleAction(input: unknown) {
 
 export async function revokeRoleAction(input: unknown) {
   return runAdmin(async () => revokeStaffRole(getDb(), await getAccessContext(), input), "Role removed.");
+}
+
+export async function completeDeletionAction(id: string) {
+  const { completeDeletion } = await import("@/server/account/self-service");
+  return runAdmin(async () => completeDeletion(getDb(), await getAccessContext(), id), "Personal data erased. Orders were kept for tax records.");
+}
+
+export async function rejectPrivacyAction(id: string) {
+  const { rejectPrivacyRequest } = await import("@/server/account/self-service");
+  return runAdmin(async () => rejectPrivacyRequest(getDb(), await getAccessContext(), id), "Request marked as rejected.");
+}
+
+export async function resetTwoFactorAction(userId: string) {
+  return runAdmin(async () => resetTwoFactor(getDb(), await getAccessContext(), userId), "Two-factor turned off and the person was signed out. They must set it up again to enter the admin.");
 }

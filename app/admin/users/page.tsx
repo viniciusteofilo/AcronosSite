@@ -6,7 +6,7 @@ import { ActionButton, GrantRoleForm } from "@/components/admin/row-actions";
 import { requireStaff } from "@/server/auth";
 import { listStaff } from "@/server/admin/people";
 import { ROLE_PERMISSIONS } from "@/server/rbac/permissions";
-import { grantRoleAction, revokeRoleAction } from "../pages/actions";
+import { grantRoleAction, resetTwoFactorAction, revokeRoleAction } from "../pages/actions";
 
 export const metadata: Metadata = { title: "Users" };
 
@@ -55,7 +55,14 @@ async function Staff() {
                   {u.name}
                   <span className="block text-xs text-muted">{u.email}{u.id === ctx.userId && " · you"}</span>
                 </td>
-                <td className={`py-3 pr-3 text-xs ${u.twoFactorEnabled ? "" : "text-alert"}`}>{u.twoFactorEnabled ? "On" : "Off — cannot enter yet"}</td>
+                <td className={`py-3 pr-3 text-xs ${u.twoFactorEnabled ? "" : "text-alert"}`}>
+                  {u.twoFactorEnabled ? "On" : "Off — cannot enter yet"}
+                  {u.twoFactorEnabled && u.id !== ctx.userId && (
+                    <span className="mt-1 block">
+                      <ActionButton label="Reset (lost phone)" danger confirm="Turn off and sign out?" run={resetTwoFactorAction.bind(null, u.id)} />
+                    </span>
+                  )}
+                </td>
                 <td className="py-3">
                   <ul className="flex flex-col gap-2">
                     {u.roles.map((r) => (

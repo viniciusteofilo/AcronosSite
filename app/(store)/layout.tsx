@@ -16,7 +16,8 @@ export default function StoreLayout({ children }: LayoutProps<"/">) {
       <Suspense fallback={<SiteHeader />}>
         <HeaderWithCart />
       </Suspense>
-      <main id="main" className="flex-1">
+      {/* min height keeps the footer below the fold while content streams in (no layout shift) */}
+      <main id="main" className="min-h-svh flex-1">
         {children}
       </main>
       <SiteFooter newsletterAction={newsletterAction} />

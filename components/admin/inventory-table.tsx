@@ -203,7 +203,7 @@ export function InventoryTable({
                                 <ul className="max-h-48 overflow-y-auto text-xs">
                                   {history.map((m) => (
                                     <li key={m.id} className="flex gap-3 border-b border-line py-1.5">
-                                      <span className={`w-10 shrink-0 text-right font-mono ${m.delta > 0 ? "text-signal" : "text-alert"}`}>
+                                      <span className={`w-10 shrink-0 text-right font-mono ${m.delta > 0 ? "text-signal-ink" : "text-alert"}`}>
                                         {m.delta > 0 ? "+" : ""}
                                         {m.delta}
                                       </span>

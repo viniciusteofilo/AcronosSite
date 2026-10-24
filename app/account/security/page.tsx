@@ -1,6 +1,10 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
+import { getDb } from "@/db/client";
+import { SessionList } from "@/components/account/session-list";
+import { listMySessions } from "@/server/account/self-service";
 import { requireUser } from "@/server/auth";
+import { endOtherSessionsAction, endSessionAction } from "../actions";
 import { MfaSetup } from "./mfa-setup";
 
 export const metadata: Metadata = { title: "Security", robots: { index: false } };
@@ -27,6 +31,10 @@ async function Content({ searchParams }: Pick<PageProps<"/account/security">, "s
         </p>
       )}
       <MfaSetup enabled={ctx.twoFactorEnabled} />
+      <section className="flex flex-col gap-3">
+        <h2 className="font-mono text-xs uppercase tracking-[0.12em] text-muted">Where you are signed in</h2>
+        <SessionList sessions={await listMySessions(getDb(), ctx)} endOthers={endOtherSessionsAction} endOne={endSessionAction} />
+      </section>
     </>
   );
 }

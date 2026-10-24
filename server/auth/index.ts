@@ -24,6 +24,7 @@ export async function getAccessContext(): Promise<AccessContext | null> {
   return loadAccessContext(getDb(), {
     userId: session.user.id,
     createdAt: new Date(session.session.createdAt),
+    id: session.session.id,
   });
 }
 

@@ -35,7 +35,7 @@ async function List() {
               {p.updatedAt && ` · edited ${new Date(p.updatedAt).toLocaleDateString("en-US", { dateStyle: "medium" })}${p.editor ? ` by ${p.editor}` : ""}`}
             </span>
           </span>
-          <span className={`inline-flex h-6 items-center border px-2 font-mono text-[10px] uppercase tracking-[0.14em] ${p.status === "published" ? "border-signal/60 text-signal" : "border-line text-muted"}`}>
+          <span className={`inline-flex h-6 items-center border px-2 font-mono text-[10px] uppercase tracking-[0.14em] ${p.status === "published" ? "border-signal/60 text-signal-ink" : "border-line text-muted"}`}>
             {p.status === "missing" ? (p.kind === "policy" ? "Not written yet" : "Default text") : p.status}
           </span>
         </li>

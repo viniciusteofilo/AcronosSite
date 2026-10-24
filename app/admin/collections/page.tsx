@@ -54,7 +54,7 @@ async function List() {
                     <span className="block truncate font-medium group-hover:underline">{c.name}</span>
                     <span className="text-xs text-muted">{c.products} product(s)</span>
                   </span>
-                  <span className={`inline-flex h-6 items-center border px-2 font-mono text-[10px] uppercase tracking-[0.14em] ${c.status === "published" ? "border-signal/60 text-signal" : "border-line text-muted"}`}>{c.status}</span>
+                  <span className={`inline-flex h-6 items-center border px-2 font-mono text-[10px] uppercase tracking-[0.14em] ${c.status === "published" ? "border-signal/60 text-signal-ink" : "border-line text-muted"}`}>{c.status}</span>
                 </div>
               </Link>
             </li>
