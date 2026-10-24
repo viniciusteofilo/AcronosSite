@@ -1,6 +1,8 @@
+import { eq } from "drizzle-orm";
 import { z } from "zod";
 import type { Database } from "@/db/client";
 import { newsletterSubscribers, supportRequests } from "@/db/schema";
+import { notifyContact, sendNewsletterConfirmation } from "@/server/email/notify";
 import { takeRateLimit } from "@/server/security/rate-limit";
 
 export type FormResult =
@@ -21,8 +23,8 @@ const newsletterInput = z.object({
 
 /**
  * Records a newsletter sign-up with its consent (source and time). The address stays
- * "pending" until confirmed by e-mail (double opt-in); confirmation e-mails are sent once
- * the e-mail provider is connected. No message is ever sent without that confirmation.
+ * "pending" until the person clicks the link in the confirmation e-mail (double opt-in).
+ * No newsletter is ever sent to an address without that confirmation.
  */
 export async function subscribeNewsletter(db: Database, form: FormData, ipHash: string): Promise<FormResult> {
   if (!(await takeRateLimit(db, `newsletter:${ipHash}`, 5, 600))) {
@@ -40,10 +42,19 @@ export async function subscribeNewsletter(db: Database, form: FormData, ipHash: 
     };
   }
   const { email, source } = parsed.data;
+  const address = email.toLowerCase();
   await db
     .insert(newsletterSubscribers)
-    .values({ email: email.toLowerCase(), status: "pending", consentSource: source, consentAt: new Date() })
+    .values({ email: address, status: "pending", consentSource: source, consentAt: new Date() })
     .onConflictDoNothing();
+  // confirmation e-mail unless already confirmed; someone who unsubscribed can sign up again
+  const [row] = await db.select({ status: newsletterSubscribers.status }).from(newsletterSubscribers).where(eq(newsletterSubscribers.email, address)).limit(1);
+  if (row && row.status !== "confirmed") {
+    if (row.status === "unsubscribed") {
+      await db.update(newsletterSubscribers).set({ status: "pending", consentSource: source, consentAt: new Date(), unsubscribedAt: null, updatedAt: new Date() }).where(eq(newsletterSubscribers.email, address));
+    }
+    await sendNewsletterConfirmation(db, address);
+  }
   // Same answer whether or not the address already existed: the form never reveals who is subscribed.
   return { ok: true, message: "Thanks. We will e-mail you to confirm before sending any newsletter." };
 }
@@ -74,6 +85,7 @@ export async function submitContact(db: Database, form: FormData, ipHash: string
   }
   const { website: _honeypot, ...data } = parsed.data;
   void _honeypot;
-  await db.insert(supportRequests).values({ ...data, email: data.email.toLowerCase(), userId });
+  const [saved] = await db.insert(supportRequests).values({ ...data, email: data.email.toLowerCase(), userId }).returning({ id: supportRequests.id });
+  await notifyContact(db, { ...data, id: saved.id });
   return { ok: true, message: "Thanks. We received your message and will reply by e-mail." };
 }

@@ -1,3 +1,4 @@
+import { notifyOrderPaid } from "@/server/email/notify";
 import { randomBytes } from "node:crypto";
 import { and, eq, inArray, isNull, lt, sql } from "drizzle-orm";
 import { z } from "zod";
@@ -216,7 +217,8 @@ export async function markOrderPaid(
   p: ConfirmedPayment,
   now: Date = new Date(),
 ): Promise<"paid" | "already" | "unknown_order"> {
-  return db.transaction(async (tx) => {
+  let paidOrderId: string | null = null;
+  const result = await db.transaction(async (tx) => {
     const [o] = await tx.select().from(orders).where(eq(orders.providerCheckoutId, p.providerCheckoutId)).for("update");
     if (!o) return "unknown_order";
     if (["paid", "partially_refunded", "refunded"].includes(o.paymentStatus)) return "already";
@@ -279,8 +281,12 @@ export async function markOrderPaid(
       })
       .where(eq(orders.id, o.id));
     await recordAudit(tx, { actorId: null, action: "order.paid", entityType: "order", entityId: o.id, after: { provider, payment: p.providerPaymentId, problems } });
-    return "paid";
+    paidOrderId = o.id;
+    return "paid" as const;
   });
+  // after the commit: the confirmation e-mail never decides whether the payment is recorded
+  if (paidOrderId) await notifyOrderPaid(db, paidOrderId);
+  return result;
 }
 
 /** The buyer's view of an order: only with the secret token from the confirmation link. */

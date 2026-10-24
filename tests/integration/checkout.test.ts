@@ -1,3 +1,4 @@
+import { emailLog } from "@/db/schema";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { randomUUID } from "node:crypto";
 import { eq } from "drizzle-orm";
@@ -253,6 +254,13 @@ describe("checkout and payment", () => {
     expect(rows.filter((r) => r.status === "succeeded").length).toBeGreaterThanOrEqual(2);
     const audit = await db.select().from(auditLogs).where(eq(auditLogs.entityId, orderId));
     expect(audit.map((a) => a.action)).toEqual(expect.arrayContaining(["order.create", "order.paid", "order.ship", "order.refund"]));
+    // the buyer got one e-mail per step (kept in the test outbox: no provider in tests)
+    const mails = await db.select().from(emailLog).where(eq(emailLog.ref, orderId));
+    expect(mails.map((m) => m.kind).sort()).toEqual(["order_confirmation", "order_refunded", "order_refunded", "order_shipped"]);
+    const shipped = mails.find((m) => m.kind === "order_shipped")!;
+    expect(shipped.bodyHtml).toContain("9400100000000000000000");
+    expect(shipped.bodyHtml).toContain("https://tools.usps.com/x");
+    expect(mails.find((m) => m.kind === "order_confirmation")!.bodyText).toMatch(/Total: \$215\.00/);
   });
 
   it("canceling an unpaid checkout is idempotent", async () => {

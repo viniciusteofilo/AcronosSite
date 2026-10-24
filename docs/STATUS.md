@@ -1,6 +1,6 @@
 # Status — Phase 07 Deployment (ready, waiting for accounts)
 
-Updated 2026-10-21. Legend: **IMPLEMENTED** (built and covered by automated tests) · **MOCKED** (works with simulated data or services) · **PLANNED** (designed, not built) · **BLOCKED** (waiting on a decision, account or file from ACRONOS).
+Updated 2026-10-23. Legend: **IMPLEMENTED** (built and covered by automated tests) · **MOCKED** (works with simulated data or services) · **PLANNED** (designed, not built) · **BLOCKED** (waiting on a decision, account or file from ACRONOS).
 
 Nothing in this repository is MOCKED. Screens that are not built say so ("Phase 04/05") instead of pretending to work.
 
@@ -22,6 +22,14 @@ Nothing in this repository is MOCKED. Screens that are not built say so ("Phase 
 | Security headers | CSP, HSTS, nosniff, frame-ancestors none / X-Frame-Options DENY, Referrer-Policy, Permissions-Policy | `curl -I` |
 | CI | GitHub Actions: lint, typecheck, unit + integration on PostgreSQL 16, build, e2e (desktop + mobile), `npm audit`; Dependabot weekly | `.github/` |
 | Design tokens | Colors and fonts from the design system; fonts self-hosted; focus ring; reduced motion | `app/globals.css` |
+
+## Store e-mails and account access
+
+| Feature | Status | Notes |
+|---|---|---|
+| Create account, forgot password, reset password | **IMPLEMENTED** | `/signup`, `/login/forgot`, `/login/reset`. Same answer whether or not an address has an account. |
+| E-mail confirmation, order confirmation, shipped, refund, newsletter double opt-in, team notice for contact messages, staff sign-in alert | **IMPLEMENTED** | See `docs/EMAIL.md`. Admin → E-mails lists every message. |
+| Sending through Resend | **BLOCKED** | Needs the free Resend account and DNS records for the domain (authorization). Until then the test site keeps messages in the admin outbox, marked "Not sent". |
 
 ## Phase 07 — Deployment (prepared; BLOCKED on ACRONOS accounts)
 
