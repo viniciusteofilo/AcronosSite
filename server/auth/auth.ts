@@ -1,7 +1,8 @@
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { nextCookies } from "better-auth/next-js";
-import { twoFactor } from "better-auth/plugins";
+import { captcha, twoFactor } from "better-auth/plugins";
+import { turnstileEnabled } from "@/server/security/turnstile";
 import type { Database } from "@/db/client";
 import * as schema from "@/db/schema";
 import { siteUrl } from "@/lib/site-url";
@@ -81,7 +82,14 @@ export function createAuth(db: Database) {
       user: { create: { after: async (user) => bootstrapTestAdmin(db, user) } },
       session: { create: { after: async (session) => alertStaffSignIn(db, session) } },
     },
-    plugins: [twoFactor({ issuer: "ACRONOS" }), nextCookies()],
+    plugins: [
+      twoFactor({ issuer: "ACRONOS" }),
+      // bot check on account creation and password-reset requests, once Turnstile keys are set
+      ...(turnstileEnabled()
+        ? [captcha({ provider: "cloudflare-turnstile", secretKey: process.env.TURNSTILE_SECRET_KEY!, endpoints: ["/sign-up/email", "/request-password-reset"] })]
+        : []),
+      nextCookies(),
+    ],
   });
 }
 

@@ -11,11 +11,12 @@ const isDev = process.env.NODE_ENV !== "production";
  */
 const csp = [
   "default-src 'self'",
-  `script-src 'self' 'unsafe-inline'${isDev ? " 'unsafe-eval'" : ""}`,
+  `script-src 'self' 'unsafe-inline' https://challenges.cloudflare.com${isDev ? " 'unsafe-eval'" : ""}`,
   "style-src 'self' 'unsafe-inline'",
   "img-src 'self' data: blob:",
   "font-src 'self'",
-  "connect-src 'self'",
+  "connect-src 'self' https://challenges.cloudflare.com",
+  "frame-src 'self' https://challenges.cloudflare.com", // bot check on public forms (Turnstile)
   "frame-ancestors 'none'",
   // hosted checkout: without JavaScript, the checkout form redirects to the provider's page
   "form-action 'self' https://checkout.stripe.com https://www.paypal.com https://www.sandbox.paypal.com",

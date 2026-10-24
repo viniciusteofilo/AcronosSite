@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useState, type FormEvent } from "react";
 import { Button } from "@/components/ui/button";
 import { Field } from "@/components/ui/field";
+import { HumanCheck, humanCheckEnabled } from "@/components/ui/turnstile";
 import { authClient } from "@/lib/auth-client";
 
 export function SignupForm({ next }: { next: string }) {
@@ -12,6 +13,8 @@ export function SignupForm({ next }: { next: string }) {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [error, setError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
+  const [human, setHuman] = useState<string | null>(null);
+  const [attempt, setAttempt] = useState(0);
 
   async function onSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -26,10 +29,13 @@ export function SignupForm({ next }: { next: string }) {
     if (password.length < 12) found.password = "Use at least 12 characters.";
     setErrors(found);
     if (Object.keys(found).length) return;
+    if (humanCheckEnabled && !human) return setError("Please complete the check that you are not a robot.");
     setPending(true);
-    const { error } = await authClient.signUp.email({ name, email, password, callbackURL: "/account?verified=1" });
+    const { error } = await authClient.signUp.email({ name, email, password, callbackURL: "/account?verified=1" }, { headers: human ? { "x-captcha-response": human } : {} });
     setPending(false);
     if (error) {
+      setHuman(null);
+      setAttempt((n) => n + 1); // a check token works once
       // the same message for an existing address: the form does not reveal who has an account
       return setError(
         error.status === 429
@@ -66,6 +72,7 @@ export function SignupForm({ next }: { next: string }) {
         </Link>
         .
       </p>
+      <HumanCheck action="signup" onToken={setHuman} resetKey={attempt} />
       {error && (
         <p role="alert" className="text-sm text-alert">
           {error}
