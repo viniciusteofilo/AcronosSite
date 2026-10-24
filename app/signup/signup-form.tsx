@@ -51,11 +51,11 @@ export function SignupForm({ next }: { next: string }) {
 
   return (
     <form onSubmit={onSubmit} className="flex flex-col gap-5" noValidate>
-      <Field label="Name" id="name" name="name" autoComplete="name" required maxLength={120} error={errors.name} />
-      <Field label="Email" id="email" name="email" type="email" autoComplete="email" required maxLength={254} error={errors.email} />
+      <Field label="Name" id="signup-name" name="name" autoComplete="name" required maxLength={120} error={errors.name} />
+      <Field label="Email" id="signup-email" name="email" type="email" autoComplete="email" required maxLength={254} error={errors.email} />
       <Field
         label="Password"
-        id="password"
+        id="signup-password"
         name="password"
         type="password"
         autoComplete="new-password"

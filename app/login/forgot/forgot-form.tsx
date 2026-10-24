@@ -40,7 +40,7 @@ export function ForgotForm() {
   return (
     <form onSubmit={onSubmit} className="flex flex-col gap-5" noValidate>
       <p className="text-sm text-muted">Enter the e-mail of your account and we will send you a link.</p>
-      <Field label="Email" id="email" name="email" type="email" autoComplete="email" required error={error ?? undefined} />
+      <Field label="Email" id="forgot-email" name="email" type="email" autoComplete="email" required error={error ?? undefined} />
       <HumanCheck action="password_reset" onToken={setHuman} resetKey={attempt} />
       <Button type="submit" disabled={pending}>
         {pending ? "Sending…" : "Send link"}

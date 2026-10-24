@@ -37,12 +37,12 @@ test("customer account: sign up, confirm e-mail, addresses, change and reset pas
   await expect(
     page.getByRole("heading", { name: "Create account" }),
   ).toBeVisible();
-  await page.getByLabel("Name").fill("Ana");
-  await page.getByLabel("Email").fill(email);
-  await page.getByLabel("Password").fill("short");
+  await page.getByLabel("Name").filter({ visible: true }).fill("Ana");
+  await page.getByLabel("Email").filter({ visible: true }).fill(email);
+  await page.getByLabel("Password").filter({ visible: true }).fill("short");
   await page.getByRole("button", { name: "Create account" }).click();
   await expect(page.getByText("Use at least 12 characters.")).toBeVisible();
-  await page.getByLabel("Password").fill(password);
+  await page.getByLabel("Password").filter({ visible: true }).fill(password);
   await page.getByRole("button", { name: "Create account" }).click();
   await expect(
     page.getByText("Welcome to ACRONOS. Your account is ready."),
@@ -64,29 +64,29 @@ test("customer account: sign up, confirm e-mail, addresses, change and reset pas
   // address book
   await page.getByRole("link", { name: "Addresses" }).click();
   await page.getByRole("button", { name: "Add address" }).click();
-  await page.getByLabel("Full name").fill("Ana Silva");
-  await page.getByLabel("Address", { exact: true }).fill("100 Main St");
-  await page.getByLabel("City").fill("Orlando");
-  await page.getByLabel("Postal code").fill("32801");
+  await page.getByLabel("Full name").filter({ visible: true }).fill("Ana Silva");
+  await page.getByLabel("Address", { exact: true }).filter({ visible: true }).fill("100 Main St");
+  await page.getByLabel("City").filter({ visible: true }).fill("Orlando");
+  await page.getByLabel("Postal code").filter({ visible: true }).fill("32801");
   await page.getByRole("button", { name: "Save address" }).click();
   await expect(page.getByText(/Choose a country/i).last()).toBeVisible();
-  await page.getByLabel("Country").selectOption("US");
+  await page.getByLabel("Country").filter({ visible: true }).selectOption("US");
   await page.getByRole("button", { name: "Save address" }).click();
   await expect(page.getByText("Address saved.")).toBeVisible();
   await expect(page.locator("address")).toContainText("100 Main St");
 
   // change password (signs out other devices, e-mails a notice)
   await page.getByRole("link", { name: "Security" }).click();
-  await page.getByLabel("Current password").fill("wrong password here");
-  await page.getByLabel(/^New password/).fill("second password 2026");
-  await page.getByLabel("Repeat new password").fill("second password 2026");
+  await page.getByLabel("Current password").filter({ visible: true }).fill("wrong password here");
+  await page.getByLabel(/^New password/).filter({ visible: true }).fill("second password 2026");
+  await page.getByLabel("Repeat new password").filter({ visible: true }).fill("second password 2026");
   await page.getByRole("button", { name: "Change password" }).click();
   await expect(
     page.getByText("Your current password is not correct."),
   ).toBeVisible();
-  await page.getByLabel("Current password").fill(password);
-  await page.getByLabel(/^New password/).fill("second password 2026");
-  await page.getByLabel("Repeat new password").fill("second password 2026");
+  await page.getByLabel("Current password").filter({ visible: true }).fill(password);
+  await page.getByLabel(/^New password/).filter({ visible: true }).fill("second password 2026");
+  await page.getByLabel("Repeat new password").filter({ visible: true }).fill("second password 2026");
   await page.getByRole("button", { name: "Change password" }).click();
   await expect(
     page.getByText("Password changed. Other devices were signed out."),
@@ -97,6 +97,8 @@ test("customer account: sign up, confirm e-mail, addresses, change and reset pas
   await page.context().clearCookies();
   await page.goto("/login");
   await page.getByRole("link", { name: "Forgot your password?" }).click();
+  // wait for the new page: the previous one stays in the DOM (hidden) and a field found too early never becomes visible
+  await expect(page.getByRole("heading", { name: "Reset password" })).toBeVisible();
   await page.getByLabel("Email").filter({ visible: true }).fill(email);
   await page.getByRole("button", { name: "Send link" }).click();
   await expect(
@@ -118,6 +120,7 @@ test("customer account: sign up, confirm e-mail, addresses, change and reset pas
   await expect(page.getByText(/Your password was changed/)).toBeVisible();
 
   await page.getByRole("link", { name: "Sign in" }).click();
+  await expect(page.getByRole("heading", { name: "Sign in" })).toBeVisible();
   await page.getByLabel("Email").filter({ visible: true }).fill(email);
   await page.getByLabel("Password").filter({ visible: true }).fill("third password 2026!");
   await page.getByRole("button", { name: "Sign in" }).click();

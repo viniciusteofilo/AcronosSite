@@ -36,8 +36,8 @@ export function ResetForm({ token }: { token: string }) {
     );
   return (
     <form onSubmit={onSubmit} className="flex flex-col gap-5" noValidate>
-      <Field label="New password" id="password" name="password" type="password" autoComplete="new-password" required minLength={12} maxLength={128} hint="At least 12 characters." />
-      <Field label="Repeat new password" id="confirm" name="confirm" type="password" autoComplete="new-password" required />
+      <Field label="New password" id="reset-password" name="password" type="password" autoComplete="new-password" required minLength={12} maxLength={128} hint="At least 12 characters." />
+      <Field label="Repeat new password" id="reset-confirm" name="confirm" type="password" autoComplete="new-password" required />
       {error && (
         <p role="alert" className="text-sm text-alert">
           {error}
