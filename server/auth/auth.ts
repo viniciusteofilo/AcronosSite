@@ -1,4 +1,5 @@
 import { betterAuth } from "better-auth";
+import { eq } from "drizzle-orm";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { nextCookies } from "better-auth/next-js";
 import { captcha, twoFactor } from "better-auth/plugins";
@@ -90,7 +91,16 @@ export function createAuth(db: Database) {
     },
     databaseHooks: {
       user: { create: { after: async (user) => bootstrapTestAdmin(db, user) } },
-      session: { create: { after: async (session) => alertStaffSignIn(db, session) } },
+      session: {
+        create: {
+          after: async (session) => {
+            // test environment: also at sign-in, so an account created before BOOTSTRAP_ADMIN_EMAIL was set still gets the role
+            const [u] = await db.select({ id: schema.users.id, email: schema.users.email }).from(schema.users).where(eq(schema.users.id, session.userId)).limit(1);
+            if (u) await bootstrapTestAdmin(db, u);
+            await alertStaffSignIn(db, session);
+          },
+        },
+      },
     },
     plugins: [
       twoFactor({ issuer: "ACRONOS" }),

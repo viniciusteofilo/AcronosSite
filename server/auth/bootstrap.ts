@@ -6,7 +6,7 @@ import { recordAudit } from "@/server/audit/log";
 
 /**
  * TEST ENVIRONMENT ONLY: the account created with BOOTSTRAP_ADMIN_EMAIL becomes the first
- * super admin, so the owner can start testing without a command line. Does nothing in
+ * super admin (when it is created or signs in), so the owner can start testing without a command line. Does nothing in
  * production (there the "First super admin" workflow is used) or once a super admin exists.
  */
 export async function bootstrapTestAdmin(db: Database, user: { id: string; email: string }) {

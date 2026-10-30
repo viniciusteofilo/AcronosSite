@@ -370,3 +370,25 @@ describe("changing the account e-mail", () => {
     expect((await db.select().from(users).where(eq(users.id, u.id)))[0]).toMatchObject({ email: newEmail, emailVerified: true });
   });
 });
+
+describe("test environment admin at sign-in", () => {
+  it("an account created before BOOTSTRAP_ADMIN_EMAIL was set becomes admin at its next sign-in", async () => {
+    const { userRoles } = await import("@/db/schema");
+    const password = "correct horse battery staple";
+    const email = addr("owner");
+    vi.stubEnv("APP_ENV", "test");
+    vi.stubEnv("BOOTSTRAP_ADMIN_EMAIL", "");
+    const { user } = await auth.api.signUpEmail({ body: { email, password, name: "Owner" } });
+    const saved = await db.select().from(userRoles).where(eq(userRoles.role, "super_admin"));
+    await db.delete(userRoles).where(eq(userRoles.role, "super_admin"));
+    try {
+      vi.stubEnv("BOOTSTRAP_ADMIN_EMAIL", ` ${email.toUpperCase()} `);
+      await auth.api.signInEmail({ body: { email, password } });
+      const roles = await db.select().from(userRoles).where(eq(userRoles.userId, user.id));
+      expect(roles.map((r) => r.role)).toEqual(["super_admin"]);
+    } finally {
+      const others = saved.filter((r) => r.userId !== user.id);
+      if (others.length) await db.insert(userRoles).values(others).onConflictDoNothing();
+    }
+  });
+});
