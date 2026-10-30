@@ -1,0 +1,8 @@
+[
+  {
+    "url": "https://github.com/advisories/GHSA-27r3-jxmh-p828",
+    "package": "body-parser",
+    "until": "2026-11-06",
+    "reason": "Fixed in body-parser 2.4.0 (released 2026-10-22), younger than the two-week rule. Only in @opennextjs/aws (Cloudflare build tooling), not in the Vercel runtime. Update after 2026-11-05."
+  }
+]
