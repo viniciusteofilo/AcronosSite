@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useActionState, useMemo, useState, type ReactNode } from "react";
+import { startTransition, useActionState, useMemo, useState, type ReactNode } from "react";
 import { Button } from "@/components/ui/button";
 import { Field } from "@/components/ui/field";
 import { formatMoney } from "@/lib/money";
@@ -59,7 +59,17 @@ export function CheckoutForm({
   const money = (m: number) => formatMoney(m, currency);
 
   return (
-    <form action={formAction} className="grid gap-12 py-10 lg:grid-cols-[minmax(0,1fr)_380px]" noValidate>
+    <form
+      // submitted by hand: a form `action` makes React reset the fields after an error, and the
+      // country list would jump back to its first option while the shipping method stays the same
+      onSubmit={(e) => {
+        e.preventDefault();
+        const data = new FormData(e.currentTarget);
+        startTransition(() => formAction(data));
+      }}
+      className="grid gap-12 py-10 lg:grid-cols-[minmax(0,1fr)_380px]"
+      noValidate
+    >
       <input type="hidden" name="idempotencyKey" value={idempotencyKey} />
       <div className="flex flex-col gap-10">
         <fieldset className="flex flex-col gap-5">
